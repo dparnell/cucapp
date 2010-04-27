@@ -14,12 +14,19 @@ module Encumber
       raw = params.shift if params.first == :raw
       command = { :name => name, :params => params }
 
-#      puts "COMMAND = #{command.inspect}"
+      puts "COMMAND = #{command.inspect}"
+      th = Thread.current
+      response = nil
+      CUCUMBER_REQUEST_QUEUE.push(command)
+      CUCUMBER_RESPONSE_QUEUE.pop { |result|
+        response = result
+        th.wakeup
+      }
       Thread.stop
-#      Net::HTTP.post_quick "http://#{@host}:#{@port}/", command
+      puts response.inspect
     end
 
-    def find(xpath)
+  def find(xpath)
 		dom_for_gui.search(xpath)
 	end
 	
@@ -40,10 +47,7 @@ module Encumber
 
     def launch
       # TODO: make this work across more operating systems
-      system("open http://localhost:3000/cucumber.html")
-      
-      # stop this thread and wait for thin to serve the application
-      Thread.stop
+      system("open http://localhost:3000/cucumber.html")      
     end
     
     def quit

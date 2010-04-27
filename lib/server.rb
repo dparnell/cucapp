@@ -6,6 +6,9 @@ APP_DIRECTORY = 'Build/Debug/test'
 
 CUCUMBER_BUNDLE_DIR = File.join(File.dirname(__FILE__), 'Build', 'Debug', 'Cucumber')
 
+CUCUMBER_REQUEST_QUEUE = EM::Queue.new
+CUCUMBER_RESPONSE_QUEUE = EM::Queue.new
+
 MAIN_THREAD = Thread.current
 
 class DeferrableBody
@@ -27,23 +30,31 @@ class CucumberAdapter
   
   def call(env)    
     if env['REQUEST_METHOD']=='GET'
+      puts "GOT REQUEST"
+      
       body = DeferrableBody.new
       
       # Get the headers out there asap, let the client know we're alive...
       EM.next_tick { env['async.callback'].call [200, {'Content-Type' => 'text/plain'}, body] }
       
-      
+      CUCUMBER_REQUEST_QUEUE.pop { |request|
+        puts "Sending request"
+        body.call [request.to_json]
+        body.succeed
+      }
       AsyncResponse
     else
+      puts "got response"
       result = {:result => :ok}
       
       body = [result.to_json]
       [
         200,
-        { 'Content-Type' => 'text/json' },
+        { 'Content-Type' => 'text/plain' },
         body
-      ]      
-      MAIN_THREAD.wakeup
+      ] 
+      
+      CUCUMBER_RESPONSE_QUEUE.push env
     end
   end
 end
@@ -86,6 +97,7 @@ Thread.new{
     
     Thin::Server.start('0.0.0.0', 3000) {
       run(cucumber)
+      puts "RESTARTING main thread"
       MAIN_THREAD.wakeup
     }
   }

@@ -41,18 +41,22 @@
 -(void)connection:(CPURLConnection)connection didReceiveResponse:(CPHTTPURLResponse)response
 {
 	// do nothing
+	console.info("didReceiveResponse")
 }
 
 -(void)connection:(CPURLConnection)connection didReceiveData:(CPString)data
 {
+	console.info("didReceiveData");
+	
 	if(data!=null && data!="") {
 		var object = [data objectFromJSON];
 		
 		if(object) {
 		}
 	}
-	
-//	[self start];
+
+	console.info(data);
+	[self start];
 }
 
 -(void)connectionDidFinishLoading:(CPURLConnection)connection
@@ -63,9 +67,7 @@
 
 @end
 
-console.info("HERE");
-[[[Cucumber alloc] init] start];
-console.info("THERE");
+[[Cucumber alloc] init];
 
 /*
 window.startCucumber = function() {
