@@ -23,12 +23,13 @@ module Encumber
         th.wakeup
       }
       Thread.stop
-      puts response.inspect
+      
+      response['rack.input'].read
     end
 
-  def find(xpath)
-		dom_for_gui.search(xpath)
-	end
+    def find(xpath)
+      dom_for_gui.search(xpath)
+    end
 	
     def restart
       begin

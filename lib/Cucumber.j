@@ -20,31 +20,27 @@ function addCucumberObject(obj) {
 }
 
 function dumpGuiObject(obj, padding) {
-	var resultingXML = [CPMutableString stringWithFormat:"\n<%s>", [obj className]];
-	[resultingXML appendFormat: "\n\t<id>%@</id>", addCucumberObject(obj)];
+	var resultingXML = "\n<"+[obj className]+">";
+	resultingXML += "\n\t<id>"+addCucumberObject(obj)+"</id>";
 
 	if ([obj respondsToSelector:@selector(text)])
 	{
-		[resultingXML appendFormat:"\n%@\t<text><![CDATA[%@]]></text>", padding, [text text]];
+		resultingXML += "\n"+padding+"\t<text><![CDATA["+[obj text]+"]]></text>";
 	}
 	if ([obj respondsToSelector:@selector(title)])
 	{
-		[resultingXML appendFormat:"\n%@\t<title><![CDATA[%@]]></title>", padding, [obj title]];
-	}
-	if ([obj respondsToSelector:@selector(currentTitle)])
-	{
-		[resultingXML appendFormat:"\n%@\t<currentTitle><![CDATA[%@]]></currentTitle>", padding, [obj currentTitle]];
+		resultingXML += "\n"+padding+"\t<title><![CDATA["+[obj title]+"]]></title>";
 	}
 	if ([obj respondsToSelector:@selector(isKeyWindow)])
 	{
 		if([obj isKeyWindow]) {
-			[resultingXML appendFormat:"\n%@\t<keyWindow>YES</keyWindow>", padding];
+			resultingXML += "\n"+padding+"\t<keyWindow>YES</keyWindow>";
 		}
 		else {
-			[resultingXML appendFormat:"\n%@\t<keyWindow>NO</keyWindow>", padding];
+			resultingXML += "\n"+padding+"\t<keyWindow>NO</keyWindow>";
 		}
 	}
-
+/*
 	var frame = [obj frame];
 	[resultingXML appendFormat:"\n%@\t<frame>", padding];
 	[resultingXML appendFormat:"\n%@\t\t<x>%f</x>", padding, frame.origin.x];
@@ -52,28 +48,28 @@ function dumpGuiObject(obj, padding) {
 	[resultingXML appendFormat:"\n%@\t\t<width>%f</width>", padding, frame.size.width];
 	[resultingXML appendFormat:"\n%@\t\t<height>%f</height>", padding, frame.size.height];
 	[resultingXML appendFormat:"\n%@\t</frame>", padding];
-	
+*/	
 	if([obj respondsToSelector: @selector(subviews)]) {
 		var views = [obj subviews];
 		if(views.count > 0) {
-			[resultingXML appendFormat:"\n%@\t<subviews>", padding];
+			resultingXML += "\n"+padding+"\t<subviews>";
 			for (var i=0; i<views.length; i++) {
 				var subview = views[i];
-				[resultingXML appendString: dumpGuiObject(subView, [NSString stringWithFormat:"%@\t\t", padding])];
+				resultingXML += dumpGuiObject(subView, padding+"\t\t");
 			}
-			[resultingXML appendFormat:"\n%@\t</subviews>", padding];
+			resultingXML += "\n"+padding+"\t</subviews>";
 		}
 		else {
-			[resultingXML appendFormat:"\n%@\t<subviews />", padding];
+			resultingXML += "\n"+padding+"\t<subviews/>";
 		}
 	}
 
 	if([obj respondsToSelector: @selector(contentView)]) {
-		[resultingXML appendFormat:"\n%@\t<contentView>", padding];
-		[resultingXML appendString: dumpGuiObject([obj contentView], [NSString stringWithFormat:"%@\t\t", padding])];
-		[resultingXML appendFormat:"\n%@\t</contentView>", padding];
+		resultingXML += "\n"+padding+"\t<contentView>";
+		resultingXML += dumpGuiObject([obj contentView], padding+"\t\t");
+		resultingXML += "\n"+padding+"\t</contentView>";
 	}
-	[resultingXML appendFormat:"\n</%s>", [obj className]];
+	resultingXML += "\n</"+[obj className]+">";
 	
 	return resultingXML;
 }
@@ -173,6 +169,9 @@ function dumpGuiObject(obj, padding) {
 #pragma mark Cucumber actions
 
 - (CPString) outputView:(CPDictionary) params {
+	cucumber_counter = 0;
+	cucumber_objects = [];
+	
 	return [CPApp xmlDescription];
 }
 
@@ -201,21 +200,21 @@ function dumpGuiObject(obj, padding) {
 @implementation CPApplication (Cucumber)
 
 - (CPString ) xmlDescription {	
-	var resultingXML = [CPMutableString stringWithFormat:"\n<%s>", [self className]];
-	[resultingXML appendFormat: "\n\t<id>%@</id>", addCucumberObject(self)];
+	var resultingXML = "\n<"+[self className]+">";
+	resultingXML += "\n\t<id>"+addCucumberObject(self)+"</id>";
 
 	var windows = [self windows];
 	if(windows.count > 0) {
-		[resultingXML appendString:"\n\t<windows>"];
+		resultingXML += "\n\t<windows>";
 		for (var i=0; i<windows.length; i++) {
-			[resultingXML appendString:[windows[i] xmlDescriptionWithStringPadding:"\t"]];
+			resultingXML += [windows[i] xmlDescriptionWithStringPadding:"\t"];
 		}
-		[resultingXML appendString:"\n\t</windows>"];
+		resultingXML += "\n\t</windows>";
 	}
 	else {
-		[resultingXML appendString:"\n\t<windows />"];
+		resultingXML += "\n\t<windows />";
 	}
-	[resultingXML appendFormat:"\n</%s>", [self className]];
+	resultingXML += "\n</"+[self className]+">";
 	return resultingXML;
 }
 
