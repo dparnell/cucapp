@@ -25,10 +25,15 @@ end
 class CucumberAdapter
   AsyncResponse = [-1, {}, []].freeze
   
-  def call(env)
-    
+  def call(env)    
     if env['REQUEST_METHOD']=='GET'
-      result = REQUEST_QUEUE.
+      body = DeferrableBody.new
+      
+      # Get the headers out there asap, let the client know we're alive...
+      EM.next_tick { env['async.callback'].call [200, {'Content-Type' => 'text/plain'}, body] }
+      
+      
+      AsyncResponse
     else
       result = {:result => :ok}
       
