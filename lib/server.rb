@@ -29,9 +29,7 @@ class CucumberAdapter
   AsyncResponse = [-1, {}, []].freeze
   
   def call(env)    
-    if env['REQUEST_METHOD']=='GET'
-      puts "GOT REQUEST"
-      
+    if env['REQUEST_METHOD']=='GET'      
       body = DeferrableBody.new
       
       # Get the headers out there asap, let the client know we're alive...
@@ -46,7 +44,6 @@ class CucumberAdapter
       
       AsyncResponse
     else
-      puts "got response"
       CUCUMBER_RESPONSE_QUEUE.push env
       result = {:result => :ok}
       

@@ -56,7 +56,9 @@ module Encumber
     end
 
     def dump
-      command 'outputView'
+      xml = command 'outputView'
+#      puts xml     
+      xml
     end
 
     def press(xpath)

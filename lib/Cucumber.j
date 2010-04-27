@@ -20,7 +20,7 @@ function addCucumberObject(obj) {
 }
 
 function dumpGuiObject(obj, padding) {
-	var resultingXML = "\n<"+[obj className]+">";
+	var resultingXML = "\n"+padding+"<"+[obj className]+">";
 	resultingXML += "\n\t<id>"+addCucumberObject(obj)+"</id>";
 
 	if ([obj respondsToSelector:@selector(text)])
@@ -51,11 +51,11 @@ function dumpGuiObject(obj, padding) {
 */	
 	if([obj respondsToSelector: @selector(subviews)]) {
 		var views = [obj subviews];
-		if(views.count > 0) {
+		if(views.length > 0) {
 			resultingXML += "\n"+padding+"\t<subviews>";
 			for (var i=0; i<views.length; i++) {
 				var subview = views[i];
-				resultingXML += dumpGuiObject(subView, padding+"\t\t");
+				resultingXML += dumpGuiObject(subview, padding+"\t\t");
 			}
 			resultingXML += "\n"+padding+"\t</subviews>";
 		}
@@ -69,7 +69,7 @@ function dumpGuiObject(obj, padding) {
 		resultingXML += dumpGuiObject([obj contentView], padding+"\t\t");
 		resultingXML += "\n"+padding+"\t</contentView>";
 	}
-	resultingXML += "\n</"+[obj className]+">";
+	resultingXML += "\n"+padding+"</"+[obj className]+">";
 	
 	return resultingXML;
 }
@@ -204,7 +204,7 @@ function dumpGuiObject(obj, padding) {
 	resultingXML += "\n\t<id>"+addCucumberObject(self)+"</id>";
 
 	var windows = [self windows];
-	if(windows.count > 0) {
+	if(windows.length > 0) {
 		resultingXML += "\n\t<windows>";
 		for (var i=0; i<windows.length; i++) {
 			resultingXML += [windows[i] xmlDescriptionWithStringPadding:"\t"];
@@ -223,7 +223,7 @@ function dumpGuiObject(obj, padding) {
 @implementation CPWindow (Cucumber)
 
 - (CPString) xmlDescriptionWithStringPadding: (CPString) padding {
-	return dumpGuiObject(obj, padding);
+	return dumpGuiObject(self, padding);
 }
 
 @end

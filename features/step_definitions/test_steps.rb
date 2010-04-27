@@ -1,7 +1,7 @@
 Given /^the application is running$/ do
-  app.gui.wait_for '//CPWindow'
+  windows = app.gui.wait_for '//CPWindow'
   
-  puts app.gui.dump
+  raise "Application didn't start" if windows.nil?
 end
 
 When /^I press the "([^\"]*)" button$/ do |arg1|
