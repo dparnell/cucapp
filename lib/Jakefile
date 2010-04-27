@@ -1,0 +1,71 @@
+/*
+ * Jakefile
+ * Cucumber
+ *
+ * Created by Daniel Parnell on April 27, 2010.
+ * Copyright 2010, Automagic Software All rights reserved.
+ */
+
+var ENV = require("system").env,
+    FILE = require("file"),
+    JAKE = require("jake"),
+    task = JAKE.task,
+    FileList = JAKE.FileList,
+    app = require("cappuccino/jake").app,
+    configuration = ENV["CONFIG"] || ENV["CONFIGURATION"] || ENV["c"] || "Debug",
+    OS = require("os");
+
+app ("Cucumber", function(task)
+{
+    task.setBuildIntermediatesPath(FILE.join("Build", "Cucumber.build", configuration));
+    task.setBuildPath(FILE.join("Build", configuration));
+
+    task.setProductName("Cucumber");
+    task.setIdentifier("com.automagicsoftware.Cucumber");
+    task.setVersion("1.0");
+    task.setAuthor("Daniel Parnell");
+    task.setEmail("daniel @nospam@ automagic-software.com");
+    task.setSummary("Cucumber");
+    task.setSources((new FileList("**/*.j")).exclude(FILE.join("Build", "**")));
+    task.setResources(new FileList("Resources/**"));
+    task.setInfoPlistPath("Info.plist");
+    task.setNib2CibFlags("-R Resources/");
+
+    if (configuration === "Debug")
+        task.setCompilerFlags("-DDEBUG -g");
+    else
+        task.setCompilerFlags("-O");
+});
+
+function printResults(configuration)
+{
+    print("----------------------------");
+    print(configuration+" app built at path: "+FILE.join("Build", configuration, "Cucumber"));
+    print("----------------------------");
+}
+
+task ("default", ["Cucumber"], function()
+{
+    printResults(configuration);
+});
+
+task ("build", ["default"]);
+
+task ("debug", function()
+{
+    ENV["CONFIGURATION"] = "Debug";
+    JAKE.subjake(["."], "build", ENV);
+});
+
+task ("release", function()
+{
+    ENV["CONFIGURATION"] = "Release";
+    JAKE.subjake(["."], "build", ENV);
+});
+
+task ("deploy", ["release"], function()
+{
+    FILE.mkdirs(FILE.join("Build", "Deployment", "Cucumber"));
+    OS.system(["press", "-f", FILE.join("Build", "Release", "Cucumber"), FILE.join("Build", "Deployment", "Cucumber")]);
+    printResults("Deployment")
+});
