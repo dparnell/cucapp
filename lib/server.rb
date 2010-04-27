@@ -35,16 +35,19 @@ class CucumberAdapter
       body = DeferrableBody.new
       
       # Get the headers out there asap, let the client know we're alive...
-      EM.next_tick { env['async.callback'].call [200, {'Content-Type' => 'text/plain'}, body] }
+      EM.next_tick do
+        env['async.callback'].call [200, {'Content-Type' => 'text/plain'}, body]
       
-      CUCUMBER_REQUEST_QUEUE.pop { |request|
-        puts "Sending request"
-        body.call [request.to_json]
-        body.succeed
-      }
+        CUCUMBER_REQUEST_QUEUE.pop { |req|
+          body.call [req.to_json]
+          body.succeed
+        }
+      end
+      
       AsyncResponse
     else
       puts "got response"
+      CUCUMBER_RESPONSE_QUEUE.push env
       result = {:result => :ok}
       
       body = [result.to_json]
@@ -52,9 +55,7 @@ class CucumberAdapter
         200,
         { 'Content-Type' => 'text/plain' },
         body
-      ] 
-      
-      CUCUMBER_RESPONSE_QUEUE.push env
+      ]       
     end
   end
 end
