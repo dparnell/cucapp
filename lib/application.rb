@@ -17,22 +17,14 @@ class Application
     @gui.command 'restoreDefaults'
   end
 
-  def dismiss_warning
-    @warning_text = ''
-    xml = @gui.dump
-    doc = REXML::Document.new xml
-
-    xpath = '//UIAlertView'
-    warning = REXML::XPath.match(doc, xpath).first
-    raise ExpectationFailed unless warning
-
-    xpath = '//UIAlertView/subviews/UILabel/text'
-    @warning_text = REXML::XPath.match(doc, xpath)[1].text
-
-    @gui.press '//UIThreePartButton'
+  def quit
+    @gui.command 'closeBrowser'
   end
-
+  
   def restart
+    quit
+    sleep 2
+    @gui.launch
   end
 
 end

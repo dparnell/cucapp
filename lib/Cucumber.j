@@ -202,6 +202,12 @@ function dumpGuiObject(obj) {
 	}
 }
 
+- (CPString) closeBrowser:(CPArray) params {
+	window.close();
+	
+	return "OK";
+}
+
 @end
 
 [Cucumber startCucumber];

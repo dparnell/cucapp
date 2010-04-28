@@ -43,21 +43,6 @@ module Encumber
     def find(xpath)
       dom_for_gui.search(xpath)
     end
-	
-    def restart
-      begin
-        @gui.quit
-      rescue EOFError
-        # no-op
-      end
-
-      sleep 3
-
-      yield if block_given?
-
-      launch
-
-    end
 
     def launch
       # TODO: make this work across more operating systems
@@ -89,19 +74,9 @@ module Encumber
       @dom = Nokogiri::XML self.dump
     end
 
-    # Idiomatic way to say wait_for_element
-
     def wait_for xpath
       wait_for_element xpath
     end
-
-    # Wait for element.  Returns an array of elements that match the
-    # xpath, or nil if nothing matches the xpath and the timeout
-    # period has expired.
-    # 
-    # Note that there's no need to sleep between polls.  At most, we
-    # can only poll about every other second, because it takes that
-    # long to request and receive the Brominet GUI XML.
 
     def wait_for_element xpath
       start_time_for_wait = Time.now
@@ -123,28 +98,6 @@ module Encumber
       command('setText', 
               'text',      text,
               'viewXPath', xpath)
-      sleep 1
-    end
-
-    # swipe to the right
-    def swipe xpath
-      command('simulateSwipe',  
-              'viewXPath', xpath)
-    end
-
-    # swipe to the left
-    def swipe_left xpath
-      command('simulateLeftSwipe',  
-              'viewXPath', xpath)
-    end
-
-    def swipe_and_wait xpath
-      swipe xpath
-      sleep 1
-    end
-
-    def swipe_left_and_wait xpath
-      swipe_left xpath
       sleep 1
     end
 
