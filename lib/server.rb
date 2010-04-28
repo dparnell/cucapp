@@ -5,9 +5,17 @@ module Encumber
   build_dir = Dir.glob('Build/*.build').first
   raise 'Can not find build directory' if build_dir.nil?
   raise 'Can not determine Cappuccino application name' if build_dir.match(/Build\/(.*)\.build/).nil?
+  app_name = $1
   
-  APP_DIRECTORY = "Build/Debug/#{$1}"
+  if File.exists?('Build/Debug')
+    mode = 'Debug'
+  else
+    mode = 'Release'
+  end
+  APP_DIRECTORY = "Build/#{mode}/#{app_name}"
 
+  raise "Can not locate built application directory: #{APP_DIRECTORY}" if !File.exists?(APP_DIRECTORY)
+  
   CUCUMBER_BUNDLE_DIR = File.join(File.dirname(__FILE__), 'Build', 'Debug', 'Cucumber')
 
   CUCUMBER_REQUEST_QUEUE = EM::Queue.new

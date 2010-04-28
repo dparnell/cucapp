@@ -82,6 +82,7 @@ function dumpGuiObject(obj) {
 @implementation Cucumber : CPObject
 {
 	BOOL requesting;
+	BOOL time_to_die;
 }
 
 + (void) startCucumber {
@@ -98,7 +99,8 @@ function dumpGuiObject(obj) {
 	if(self) {
 		// initialization code here
 		cucumber_instance = self;
-		requesting = true;
+		requesting = YES;
+		time_to_die = NO;
 	}
 	
 	return self;
@@ -165,7 +167,11 @@ function dumpGuiObject(obj) {
 		
 		[self startResponse: result withError: error];
 	} else {
-		[self startRequest];
+		if(time_to_die) {
+			window.close();
+		} else {
+			[self startRequest];
+		}
 	}
 }
 
@@ -203,8 +209,7 @@ function dumpGuiObject(obj) {
 }
 
 - (CPString) closeBrowser:(CPArray) params {
-	window.close();
-	
+	time_to_die = YES;
 	return "OK";
 }
 

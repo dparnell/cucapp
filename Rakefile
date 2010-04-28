@@ -15,7 +15,7 @@ spec = Gem::Specification.new do |s|
   s.files << 'Rakefile'
   s.autorequire = "cucapp"
   s.test_files = FileList["{test}/**/*test.rb"].to_a
-  s.has_rdoc = true
+  s.has_rdoc = false
   s.extra_rdoc_files = ["README"]
   s.add_dependency("thin", ">= 0")
   s.add_dependency("nokogiri", ">= 0")
