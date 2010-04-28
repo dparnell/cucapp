@@ -16,7 +16,7 @@ module Encumber
 
   raise "Can not locate built application directory: #{APP_DIRECTORY}" if !File.exists?(APP_DIRECTORY)
   
-  CUCUMBER_BUNDLE_DIR = File.join(File.dirname(__FILE__), 'Build', 'Debug', 'Cucumber')
+  CUCUMBER_BUNDLE_DIR = File.join(File.dirname(__FILE__), 'Plugin', 'Cucumber')
 
   CUCUMBER_REQUEST_QUEUE = EM::Queue.new
   CUCUMBER_RESPONSE_QUEUE = EM::Queue.new

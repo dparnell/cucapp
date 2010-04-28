@@ -22,7 +22,9 @@ module Encumber
         response = result
         th.wakeup
       }
-      Thread.stop
+      startTime = Time.now
+      sleep @timeout
+      raise "Command timed out" if Time.now-startTime>=@timeout
       
       data = response['rack.input'].read
       
