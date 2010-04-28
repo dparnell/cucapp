@@ -1,4 +1,3 @@
-require 'enumerator' 
 require 'json'
 require 'nokogiri'
 require 'server'
@@ -59,12 +58,15 @@ module Encumber
       xml
     end
 
-    def press(xpath)
+    def id_for_element(xpath)
       elements = dom_for_gui.search(xpath+"/id")
       raise "element not found: #{xpath}" if elements.empty?
-            
+      elements.first.inner_text.to_i
+    end
+    
+    def press(xpath)
 #      puts "elements = #{elements.inspect}"
-      result = command 'simulateTouch', elements.first.inner_text.to_i
+      result = command 'simulateTouch', id_for_element(xpath)
       
       raise "View not found: #{xpath}" if result!='OK'
     end
@@ -95,9 +97,7 @@ module Encumber
     end
 
     def type_in_field text, xpath
-      command('setText', 
-              'text',      text,
-              'viewXPath', xpath)
+      command('setText', id_for_element(xpath), text)
       sleep 1
     end
 

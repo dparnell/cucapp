@@ -1,7 +1,6 @@
 require 'encumber'
-require 'rexml/document'
 
-class Application
+class Cucapp
   class ExpectationFailed < RuntimeError
   end
 

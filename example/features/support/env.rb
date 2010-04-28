@@ -5,7 +5,7 @@ require 'cucapp.rb'
 module AppHelper
 
   def app
-    @app ||= Application.new
+    @app ||= Cucapp.new
   end
 
 end

@@ -9,7 +9,7 @@ spec = Gem::Specification.new do |s|
   s.email = "daniel@automagic-software.com"
   s.homepage = "http://www.automagic-software.com/"
   s.platform = Gem::Platform::RUBY
-  s.summary = "Some description"
+  s.summary = "An interface between Cucumber and Cappuccino"
   s.files = FileList["{bin,lib,example}/**/*"].to_a
   s.files << 'cucapp.rb'
   s.files << 'Rakefile'
