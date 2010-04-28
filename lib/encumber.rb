@@ -24,7 +24,13 @@ module Encumber
       }
       Thread.stop
       
-      response['rack.input'].read
+      data = response['rack.input'].read
+      
+      if data && !data.empty? && data!='null'
+        JSON.parse(data)["result"]
+      else
+        nil
+      end
     end
 
     def find(xpath)
@@ -57,7 +63,7 @@ module Encumber
 
     def dump
       xml = command 'outputView'
-#      puts xml     
+      puts xml.inspect
       xml
     end
 
@@ -68,6 +74,9 @@ module Encumber
     # Nokogiri XML DOM for the current Brominet XML representation of the GUI
     def dom_for_gui
       @dom = Nokogiri::XML self.dump
+      puts @dom
+      
+      @dom
     end
 
     # Idiomatic way to say wait_for_element

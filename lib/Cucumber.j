@@ -19,57 +19,57 @@ function addCucumberObject(obj) {
 	return cucumber_counter;
 }
 
-function dumpGuiObject(obj, padding) {
-	var resultingXML = "\n"+padding+"<"+[obj className]+">";
-	resultingXML += "\n\t<id>"+addCucumberObject(obj)+"</id>";
+function dumpGuiObject(obj) {
+	var resultingXML = "<"+[obj className]+">";
+	resultingXML += "<id>"+addCucumberObject(obj)+"</id>";
 
 	if ([obj respondsToSelector:@selector(text)])
 	{
-		resultingXML += "\n"+padding+"\t<text><![CDATA["+[obj text]+"]]></text>";
+		resultingXML += "<text><![CDATA["+[obj text]+"]]></text>";
 	}
 	if ([obj respondsToSelector:@selector(title)])
 	{
-		resultingXML += "\n"+padding+"\t<title><![CDATA["+[obj title]+"]]></title>";
+		resultingXML += "<title><![CDATA["+[obj title]+"]]></title>";
 	}
 	if ([obj respondsToSelector:@selector(isKeyWindow)])
 	{
 		if([obj isKeyWindow]) {
-			resultingXML += "\n"+padding+"\t<keyWindow>YES</keyWindow>";
+			resultingXML += "<keyWindow>YES</keyWindow>";
 		}
 		else {
-			resultingXML += "\n"+padding+"\t<keyWindow>NO</keyWindow>";
+			resultingXML += "<keyWindow>NO</keyWindow>";
 		}
 	}
-/*
+
 	var frame = [obj frame];
-	[resultingXML appendFormat:"\n%@\t<frame>", padding];
-	[resultingXML appendFormat:"\n%@\t\t<x>%f</x>", padding, frame.origin.x];
-	[resultingXML appendFormat:"\n%@\t\t<y>%f</y>", padding, frame.origin.y];
-	[resultingXML appendFormat:"\n%@\t\t<width>%f</width>", padding, frame.size.width];
-	[resultingXML appendFormat:"\n%@\t\t<height>%f</height>", padding, frame.size.height];
-	[resultingXML appendFormat:"\n%@\t</frame>", padding];
-*/	
+	resultingXML += "<frame>";
+	resultingXML += "<x>"+frame.origin.x+"</x>";
+	resultingXML += "<y>"+frame.origin.y+"</y>";
+	resultingXML += "<width>"+frame.size.width+"</width>";
+	resultingXML += "<height>"+frame.size.height+"</height>";
+	resultingXML += "</frame>";
+
 	if([obj respondsToSelector: @selector(subviews)]) {
 		var views = [obj subviews];
 		if(views.length > 0) {
-			resultingXML += "\n"+padding+"\t<subviews>";
+			resultingXML += "<subviews>";
 			for (var i=0; i<views.length; i++) {
 				var subview = views[i];
-				resultingXML += dumpGuiObject(subview, padding+"\t\t");
+				resultingXML += dumpGuiObject(subview);
 			}
-			resultingXML += "\n"+padding+"\t</subviews>";
+			resultingXML += "</subviews>";
 		}
 		else {
-			resultingXML += "\n"+padding+"\t<subviews/>";
+			resultingXML += "<subviews/>";
 		}
 	}
 
 	if([obj respondsToSelector: @selector(contentView)]) {
-		resultingXML += "\n"+padding+"\t<contentView>";
-		resultingXML += dumpGuiObject([obj contentView], padding+"\t\t");
-		resultingXML += "\n"+padding+"\t</contentView>";
+		resultingXML += "<contentView>";
+		resultingXML += dumpGuiObject([obj contentView]);
+		resultingXML += "</contentView>";
 	}
-	resultingXML += "\n"+padding+"</"+[obj className]+">";
+	resultingXML += "</"+[obj className]+">";
 	
 	return resultingXML;
 }
@@ -112,7 +112,7 @@ function dumpGuiObject(obj, padding) {
 	requesting = NO;
 	var request = [[CPURLRequest alloc] initWithURL: "/cucumber"];
 	[request setHTTPMethod: "POST"];
-	[request setHTTPBody: [CPString JSONFromObject: result]];
+	[request setHTTPBody: [CPString JSONFromObject: { result: result}]];
 
 	[CPURLConnection connectionWithRequest: request delegate: self];
 }
@@ -200,21 +200,21 @@ function dumpGuiObject(obj, padding) {
 @implementation CPApplication (Cucumber)
 
 - (CPString ) xmlDescription {	
-	var resultingXML = "\n<"+[self className]+">";
-	resultingXML += "\n\t<id>"+addCucumberObject(self)+"</id>";
+	var resultingXML = "<"+[self className]+">";
+	resultingXML += "<id>"+addCucumberObject(self)+"</id>";
 
 	var windows = [self windows];
 	if(windows.length > 0) {
-		resultingXML += "\n\t<windows>";
+		resultingXML += "<windows>";
 		for (var i=0; i<windows.length; i++) {
-			resultingXML += [windows[i] xmlDescriptionWithStringPadding:"\t"];
+			resultingXML += [windows[i] xmlDescription];
 		}
-		resultingXML += "\n\t</windows>";
+		resultingXML += "</windows>";
 	}
 	else {
-		resultingXML += "\n\t<windows />";
+		resultingXML += "<windows />";
 	}
-	resultingXML += "\n</"+[self className]+">";
+	resultingXML += "</"+[self className]+">";
 	return resultingXML;
 }
 
@@ -222,8 +222,8 @@ function dumpGuiObject(obj, padding) {
 
 @implementation CPWindow (Cucumber)
 
-- (CPString) xmlDescriptionWithStringPadding: (CPString) padding {
-	return dumpGuiObject(self, padding);
+- (CPString) xmlDescription {
+	return dumpGuiObject(self);
 }
 
 @end
