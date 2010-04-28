@@ -13,8 +13,9 @@ cucumber_instance = nil;
 cucumber_objects = nil;
 cucumber_counter = 0;
 
-function addCucumberObject(obj) {	
-	cucumber_objects[cucumber_counter++] = obj;
+function addCucumberObject(obj) {
+	cucumber_counter++;
+	cucumber_objects[cucumber_counter] = obj;
 	
 	return cucumber_counter;
 }
@@ -41,14 +42,18 @@ function dumpGuiObject(obj) {
 		}
 	}
 
-	var frame = [obj frame];
-	resultingXML += "<frame>";
-	resultingXML += "<x>"+frame.origin.x+"</x>";
-	resultingXML += "<y>"+frame.origin.y+"</y>";
-	resultingXML += "<width>"+frame.size.width+"</width>";
-	resultingXML += "<height>"+frame.size.height+"</height>";
-	resultingXML += "</frame>";
-
+	if([obj respondsToSelector: @selector(frame)]) {
+		var frame = [obj frame];
+		if(frame) {
+			resultingXML += "<frame>";
+			resultingXML += "<x>"+frame.origin.x+"</x>";
+			resultingXML += "<y>"+frame.origin.y+"</y>";
+			resultingXML += "<width>"+frame.size.width+"</width>";
+			resultingXML += "<height>"+frame.size.height+"</height>";
+			resultingXML += "</frame>";
+		}
+	}
+	
 	if([obj respondsToSelector: @selector(subviews)]) {
 		var views = [obj subviews];
 		if(views.length > 0) {
@@ -83,7 +88,6 @@ function dumpGuiObject(obj) {
 	if(cucumber_instance==nil) {
 		 [[Cucumber alloc] init];
 		
-		console.info("Starting");
 		[cucumber_instance startRequest];
 	}
 }
@@ -108,11 +112,11 @@ function dumpGuiObject(obj) {
 	[CPURLConnection connectionWithRequest: request delegate: self];
 }
 
-- (void) startResponse:(id)result {
+- (void) startResponse:(id)result withError:(CPString) error{
 	requesting = NO;
 	var request = [[CPURLRequest alloc] initWithURL: "/cucumber"];
 	[request setHTTPMethod: "POST"];
-	[request setHTTPBody: [CPString JSONFromObject: { result: result}]];
+	[request setHTTPBody: [CPString JSONFromObject: { result: result, error: error}]];
 
 	[CPURLConnection connectionWithRequest: request delegate: self];
 }
@@ -130,31 +134,36 @@ function dumpGuiObject(obj) {
 -(void)connection:(CPURLConnection)connection didReceiveResponse:(CPHTTPURLResponse)response
 {
 	// do nothing
-	console.info("didReceiveResponse")
 }
 
 -(void)connection:(CPURLConnection)connection didReceiveData:(CPString)data
 {	
 	if(requesting) {
 		var result = nil;
+		var error = nil;
 		
-		if(data!=null && data!="") {
-			var request = [data objectFromJSON];
+		try {
+			if(data!=null && data!="") {
+				var request = [data objectFromJSON];
 		
-			if(request) {
-				var msg = CPSelectorFromString(request.name+":");
+				if(request) {
+					var msg = CPSelectorFromString(request.name+":");
 				
-				if([self respondsToSelector: msg]) {
-					result = [self performSelector: msg withObject: request.params];
-				} else if([[CPApp delegate] respondsToSelector: msg]) {
-					result = [[CPApp delegate] performSelector: msg withObject: request.params];
-				} else {
-					console.warn("Unhandled message: "+request.name);
+					if([self respondsToSelector: msg]) {
+						result = [self performSelector: msg withObject: request.params];
+					} else if([[CPApp delegate] respondsToSelector: msg]) {
+						result = [[CPApp delegate] performSelector: msg withObject: request.params];
+					} else {
+						error = "Unhandled message: "+request.name;
+						console.warn(error);
+					}
 				}
 			}
+		} catch(e) {
+			error = e.message;
 		}
-
-		[self startResponse: result];
+		
+		[self startResponse: result withError: error];
 	} else {
 		[self startRequest];
 	}
@@ -162,17 +171,35 @@ function dumpGuiObject(obj) {
 
 -(void)connectionDidFinishLoading:(CPURLConnection)connection
 {
-	console.info("THERE");
 }
 
 #pragma mark -
 #pragma mark Cucumber actions
 
-- (CPString) outputView:(CPDictionary) params {
+- (CPString) restoreDefaults:(CPDictionary) params {
+	if([[CPApp delegate] respondsToSelector: @selector(restoreDefaults:)]) {
+		[[CPApp delegate] restoreDefaults: params];
+	}
+	
+	return "OK";
+}
+
+- (CPString) outputView:(CPArray) params {
 	cucumber_counter = 0;
 	cucumber_objects = [];
 	
 	return [CPApp xmlDescription];
+}
+
+- (CPString) simulateTouch:(CPArray) params {
+	var obj = cucumber_objects[params[0]];
+	
+	if(obj) {
+		[obj performClick: self];
+		return "OK";
+	} else {
+		return "NOT FOUND";
+	}
 }
 
 @end
@@ -207,7 +234,7 @@ function dumpGuiObject(obj) {
 	if(windows.length > 0) {
 		resultingXML += "<windows>";
 		for (var i=0; i<windows.length; i++) {
-			resultingXML += [windows[i] xmlDescription];
+			resultingXML += dumpGuiObject(windows[i]);
 		}
 		resultingXML += "</windows>";
 	}
@@ -216,14 +243,6 @@ function dumpGuiObject(obj) {
 	}
 	resultingXML += "</"+[self className]+">";
 	return resultingXML;
-}
-
-@end
-
-@implementation CPWindow (Cucumber)
-
-- (CPString) xmlDescription {
-	return dumpGuiObject(self);
 }
 
 @end

@@ -14,7 +14,8 @@ module Encumber
       raw = params.shift if params.first == :raw
       command = { :name => name, :params => params }
 
-      puts "COMMAND = #{command.inspect}"
+#      puts "command = #{command.inspect}"
+      
       th = Thread.current
       response = nil
       CUCUMBER_REQUEST_QUEUE.push(command)
@@ -26,8 +27,14 @@ module Encumber
       
       data = response['rack.input'].read
       
-      if data && !data.empty? && data!='null'
-        JSON.parse(data)["result"]
+      if data && !data.empty?
+        obj = JSON.parse(data)
+        
+        if obj["error"]
+          raise obj["error"]
+        else
+          obj["result"]
+        end
       else
         nil
       end
@@ -62,21 +69,24 @@ module Encumber
     end
 
     def dump
-      xml = command 'outputView'
-      puts xml.inspect
+      xml = command 'outputView'      
+#      puts xml
       xml
     end
 
     def press(xpath)
-      command 'simulateTouch', 'viewXPath', xpath
+      elements = dom_for_gui.search(xpath+"/id")
+      raise "element not found: #{xpath}" if elements.empty?
+            
+#      puts "elements = #{elements.inspect}"
+      result = command 'simulateTouch', elements.first.inner_text.to_i
+      
+      raise "View not found: #{xpath}" if result!='OK'
     end
 
     # Nokogiri XML DOM for the current Brominet XML representation of the GUI
     def dom_for_gui
       @dom = Nokogiri::XML self.dump
-      puts @dom
-      
-      @dom
     end
 
     # Idiomatic way to say wait_for_element
