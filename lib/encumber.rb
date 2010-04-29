@@ -1,6 +1,7 @@
 require 'json'
 require 'nokogiri'
 require 'server'
+require 'launchy'
 
 module Encumber
 
@@ -46,8 +47,7 @@ module Encumber
     end
 
     def launch
-      # TODO: make this work across more operating systems
-      system("open http://localhost:3000/cucumber.html")      
+      Launchy.open("http://localhost:3000/cucumber.html")      
     end
     
     def quit
