@@ -1,4 +1,4 @@
-@STATIC;1.0;p;10;Cucumber.jt;8048;@STATIC;1.0;I;23;Foundation/Foundation.jt;8001;objj_executeFile("Foundation/Foundation.j", NO);
+@STATIC;1.0;p;10;Cucumber.jt;10024;@STATIC;1.0;I;23;Foundation/Foundation.jt;9977;objj_executeFile("Foundation/Foundation.j", NO);
 cucumber_instance = nil;
 cucumber_objects = nil;
 cucumber_counter = 0;
@@ -8,57 +8,81 @@ addCucumberObject= function(obj) {
  return cucumber_counter;
 }
 dumpGuiObject= function(obj) {
- var resultingXML = "<"+objj_msgSend(obj, "className")+">";
- resultingXML += "<id>"+addCucumberObject(obj)+"</id>";
- if (objj_msgSend(obj, "respondsToSelector:", sel_getUid("text")))
- {
-  resultingXML += "<text><![CDATA["+objj_msgSend(obj, "text")+"]]></text>";
- }
- if (objj_msgSend(obj, "respondsToSelector:", sel_getUid("title")))
- {
-  resultingXML += "<title><![CDATA["+objj_msgSend(obj, "title")+"]]></title>";
- }
- if (objj_msgSend(obj, "respondsToSelector:", sel_getUid("isKeyWindow")))
- {
-  if(objj_msgSend(obj, "isKeyWindow")) {
-   resultingXML += "<keyWindow>YES</keyWindow>";
+ if(obj) {
+  var resultingXML = "<"+objj_msgSend(obj, "className")+">";
+  resultingXML += "<id>"+addCucumberObject(obj)+"</id>";
+  if (objj_msgSend(obj, "respondsToSelector:", sel_getUid("text")))
+  {
+   resultingXML += "<text><![CDATA["+objj_msgSend(obj, "text")+"]]></text>";
   }
-  else {
-   resultingXML += "<keyWindow>NO</keyWindow>";
+  if (objj_msgSend(obj, "respondsToSelector:", sel_getUid("title")))
+  {
+   resultingXML += "<title><![CDATA["+objj_msgSend(obj, "title")+"]]></title>";
   }
- }
- if(objj_msgSend(obj, "respondsToSelector:",  sel_getUid("frame"))) {
-  var frame = objj_msgSend(obj, "frame");
-  if(frame) {
-   resultingXML += "<frame>";
-   resultingXML += "<x>"+frame.origin.x+"</x>";
-   resultingXML += "<y>"+frame.origin.y+"</y>";
-   resultingXML += "<width>"+frame.size.width+"</width>";
-   resultingXML += "<height>"+frame.size.height+"</height>";
-   resultingXML += "</frame>";
+  if (objj_msgSend(obj, "respondsToSelector:", sel_getUid("objectValue")))
+  {
+   resultingXML += "<objectValue><![CDATA["+objj_msgSend(CPString, "stringWithFormat:",  "%@", objj_msgSend(obj, "objectValue"))+"]]></objectValue>";
   }
- }
- if(objj_msgSend(obj, "respondsToSelector:",  sel_getUid("subviews"))) {
-  var views = objj_msgSend(obj, "subviews");
-  if(views.length > 0) {
-   resultingXML += "<subviews>";
-   for (var i=0; i<views.length; i++) {
-    var subview = views[i];
-    resultingXML += dumpGuiObject(subview);
+  if (objj_msgSend(obj, "respondsToSelector:", sel_getUid("isKeyWindow")))
+  {
+   if(objj_msgSend(obj, "isKeyWindow")) {
+    resultingXML += "<keyWindow>YES</keyWindow>";
    }
-   resultingXML += "</subviews>";
+   else {
+    resultingXML += "<keyWindow>NO</keyWindow>";
+   }
   }
-  else {
-   resultingXML += "<subviews/>";
+  if(objj_msgSend(obj, "respondsToSelector:",  sel_getUid("frame"))) {
+   var frame = objj_msgSend(obj, "frame");
+   if(frame) {
+    resultingXML += "<frame>";
+    resultingXML += "<x>"+frame.origin.x+"</x>";
+    resultingXML += "<y>"+frame.origin.y+"</y>";
+    resultingXML += "<width>"+frame.size.width+"</width>";
+    resultingXML += "<height>"+frame.size.height+"</height>";
+    resultingXML += "</frame>";
+   }
   }
+  if(objj_msgSend(obj, "respondsToSelector:",  sel_getUid("subviews"))) {
+   var views = objj_msgSend(obj, "subviews");
+   if(views && views.length > 0) {
+    resultingXML += "<subviews>";
+    for (var i=0; i<views.length; i++) {
+     resultingXML += dumpGuiObject(views[i]);
+    }
+    resultingXML += "</subviews>";
+   }
+   else {
+    resultingXML += "<subviews/>";
+   }
+  }
+  if(objj_msgSend(obj, "respondsToSelector:",  sel_getUid("itemArray"))) {
+   var items = objj_msgSend(obj, "itemArray");
+   if(items && items.length>0) {
+    resultingXML += "<items>";
+    for (var i=0; i<items.length; i++) {
+     resultingXML += dumpGuiObject(items[i]);
+    }
+    resultingXML += "</items>";
+   } else {
+    resultingXML += "<items/>";
+   }
+  }
+  if(objj_msgSend(obj, "respondsToSelector:",  sel_getUid("submenu"))) {
+   var submenu = objj_msgSend(obj, "submenu");
+   if(submenu!=null) {
+    resultingXML += dumpGuiObject(submenu);
+   }
+  }
+  if(objj_msgSend(obj, "respondsToSelector:",  sel_getUid("contentView"))) {
+   resultingXML += "<contentView>";
+   resultingXML += dumpGuiObject(objj_msgSend(obj, "contentView"));
+   resultingXML += "</contentView>";
+  }
+  resultingXML += "</"+objj_msgSend(obj, "className")+">";
+  return resultingXML;
  }
- if(objj_msgSend(obj, "respondsToSelector:",  sel_getUid("contentView"))) {
-  resultingXML += "<contentView>";
-  resultingXML += dumpGuiObject(objj_msgSend(obj, "contentView"));
-  resultingXML += "</contentView>";
- }
- resultingXML += "</"+objj_msgSend(obj, "className")+">";
- return resultingXML;
+ return '';
 }
 {var the_class = objj_allocateClassPair(CPObject, "Cucumber"),
 meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("requesting"), new objj_ivar("time_to_die")]);
@@ -163,6 +187,39 @@ class_addMethods(the_class, [new objj_method(sel_getUid("init"), function $Cucum
   return "NOT FOUND";
  }
 }
+},["CPString","CPArray"]), new objj_method(sel_getUid("setText:"), function $Cucumber__setText_(self, _cmd, params)
+{ with(self)
+{
+ var obj = cucumber_objects[params[0]];
+ if(obj) {
+  objj_msgSend(obj, "setText:",  params[1]);
+  return "OK";
+ } else {
+  return "NOT FOUND";
+ }
+}
+},["CPString","CPArray"]), new objj_method(sel_getUid("closeWindow:"), function $Cucumber__closeWindow_(self, _cmd, params)
+{ with(self)
+{
+ var obj = cucumber_objects[params[0]];
+ if(obj) {
+  objj_msgSend(obj, "performClose:",  self);
+  return "OK";
+ } else {
+  return "NOT FOUND";
+ }
+}
+},["CPString","CPArray"]), new objj_method(sel_getUid("performMenuItem:"), function $Cucumber__performMenuItem_(self, _cmd, params)
+{ with(self)
+{
+ var obj = cucumber_objects[params[0]];
+ if(obj) {
+  objj_msgSend(objj_msgSend(obj, "target"), "performSelector:withObject:",  objj_msgSend(obj, "action"),  obj);
+  return "OK";
+ } else {
+  return "NOT FOUND";
+ }
+}
 },["CPString","CPArray"]), new objj_method(sel_getUid("closeBrowser:"), function $Cucumber__closeBrowser_(self, _cmd, params)
 { with(self)
 {
@@ -219,6 +276,14 @@ var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_
  }
  else {
   resultingXML += "<windows />";
+ }
+ var menu = objj_msgSend(self, "mainMenu");
+ if(menu) {
+  resultingXML += "<menus>";
+  resultingXML += dumpGuiObject(menu);
+  resultingXML += "</menus>";
+ } else {
+  resultingXML += "<menus/>";
  }
  resultingXML += "</"+objj_msgSend(self, "className")+">";
  return resultingXML;

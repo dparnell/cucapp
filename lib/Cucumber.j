@@ -21,62 +21,90 @@ function addCucumberObject(obj) {
 }
 
 function dumpGuiObject(obj) {
-	var resultingXML = "<"+[obj className]+">";
-	resultingXML += "<id>"+addCucumberObject(obj)+"</id>";
+	if(obj) {
+		var resultingXML = "<"+[obj className]+">";
+		resultingXML += "<id>"+addCucumberObject(obj)+"</id>";
 
-	if ([obj respondsToSelector:@selector(text)])
-	{
-		resultingXML += "<text><![CDATA["+[obj text]+"]]></text>";
-	}
-	if ([obj respondsToSelector:@selector(title)])
-	{
-		resultingXML += "<title><![CDATA["+[obj title]+"]]></title>";
-	}
-	if ([obj respondsToSelector:@selector(isKeyWindow)])
-	{
-		if([obj isKeyWindow]) {
-			resultingXML += "<keyWindow>YES</keyWindow>";
+		if ([obj respondsToSelector:@selector(text)])
+		{
+			resultingXML += "<text><![CDATA["+[obj text]+"]]></text>";
 		}
-		else {
-			resultingXML += "<keyWindow>NO</keyWindow>";
+		if ([obj respondsToSelector:@selector(title)])
+		{
+			resultingXML += "<title><![CDATA["+[obj title]+"]]></title>";
 		}
-	}
-
-	if([obj respondsToSelector: @selector(frame)]) {
-		var frame = [obj frame];
-		if(frame) {
-			resultingXML += "<frame>";
-			resultingXML += "<x>"+frame.origin.x+"</x>";
-			resultingXML += "<y>"+frame.origin.y+"</y>";
-			resultingXML += "<width>"+frame.size.width+"</width>";
-			resultingXML += "<height>"+frame.size.height+"</height>";
-			resultingXML += "</frame>";
+		if ([obj respondsToSelector:@selector(objectValue)])
+		{
+			resultingXML += "<objectValue><![CDATA["+[CPString stringWithFormat: "%@", [obj objectValue]]+"]]></objectValue>";
 		}
-	}
-	
-	if([obj respondsToSelector: @selector(subviews)]) {
-		var views = [obj subviews];
-		if(views.length > 0) {
-			resultingXML += "<subviews>";
-			for (var i=0; i<views.length; i++) {
-				var subview = views[i];
-				resultingXML += dumpGuiObject(subview);
+		
+		if ([obj respondsToSelector:@selector(isKeyWindow)])
+		{
+			if([obj isKeyWindow]) {
+				resultingXML += "<keyWindow>YES</keyWindow>";
 			}
-			resultingXML += "</subviews>";
+			else {
+				resultingXML += "<keyWindow>NO</keyWindow>";
+			}
 		}
-		else {
-			resultingXML += "<subviews/>";
-		}
-	}
 
-	if([obj respondsToSelector: @selector(contentView)]) {
-		resultingXML += "<contentView>";
-		resultingXML += dumpGuiObject([obj contentView]);
-		resultingXML += "</contentView>";
-	}
-	resultingXML += "</"+[obj className]+">";
+		if([obj respondsToSelector: @selector(frame)]) {
+			var frame = [obj frame];
+			if(frame) {
+				resultingXML += "<frame>";
+				resultingXML += "<x>"+frame.origin.x+"</x>";
+				resultingXML += "<y>"+frame.origin.y+"</y>";
+				resultingXML += "<width>"+frame.size.width+"</width>";
+				resultingXML += "<height>"+frame.size.height+"</height>";
+				resultingXML += "</frame>";
+			}
+		}
 	
-	return resultingXML;
+		if([obj respondsToSelector: @selector(subviews)]) {
+			var views = [obj subviews];
+			if(views && views.length > 0) {
+				resultingXML += "<subviews>";
+				for (var i=0; i<views.length; i++) {
+					resultingXML += dumpGuiObject(views[i]);
+				}
+				resultingXML += "</subviews>";
+			}
+			else {
+				resultingXML += "<subviews/>";
+			}
+		}
+
+		if([obj respondsToSelector: @selector(itemArray)]) {
+			var items = [obj itemArray];
+			if(items && items.length>0) {
+				resultingXML += "<items>";
+				for (var i=0; i<items.length; i++) {
+					resultingXML += dumpGuiObject(items[i]);
+				}
+				resultingXML += "</items>";
+			} else {
+				resultingXML += "<items/>";
+			}
+		}
+	
+		if([obj respondsToSelector: @selector(submenu)]) {
+			var submenu = [obj submenu];
+			if(submenu!=null) {
+				resultingXML += dumpGuiObject(submenu);
+			}
+		}
+	
+		if([obj respondsToSelector: @selector(contentView)]) {
+			resultingXML += "<contentView>";
+			resultingXML += dumpGuiObject([obj contentView]);
+			resultingXML += "</contentView>";
+		}
+		resultingXML += "</"+[obj className]+">";
+	
+		return resultingXML;
+	}
+	
+	return '';
 }
 
 @implementation Cucumber : CPObject
@@ -208,6 +236,40 @@ function dumpGuiObject(obj) {
 	}
 }
 
+- (CPString) setText:(CPArray) params {
+	var obj = cucumber_objects[params[0]];
+	
+	if(obj) {
+		[obj setText: params[1]];
+		return "OK";
+	} else {
+		return "NOT FOUND";
+	}
+}
+
+- (CPString) closeWindow:(CPArray) params {
+	var obj = cucumber_objects[params[0]];
+	
+	if(obj) {
+		[obj performClose: self];
+		return "OK";
+	} else {
+		return "NOT FOUND";
+	}
+}
+
+- (CPString) performMenuItem:(CPArray) params {
+	var obj = cucumber_objects[params[0]];
+	
+	if(obj) {
+		[[obj target] performSelector: [obj action] withObject: obj];
+		
+		return "OK";
+	} else {
+		return "NOT FOUND";
+	}
+}
+
 - (CPString) closeBrowser:(CPArray) params {
 	time_to_die = YES;
 	return "OK";
@@ -251,6 +313,14 @@ function dumpGuiObject(obj) {
 	}
 	else {
 		resultingXML += "<windows />";
+	}
+	var menu = [self mainMenu];
+	if(menu) {
+		resultingXML += "<menus>";
+		resultingXML += dumpGuiObject(menu);
+		resultingXML += "</menus>";
+	} else {
+		resultingXML += "<menus/>";
 	}
 	resultingXML += "</"+[self className]+">";
 	return resultingXML;

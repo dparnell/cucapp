@@ -66,11 +66,18 @@ module Encumber
       elements.first.inner_text.to_i
     end
     
-    def press(xpath)
-#      puts "elements = #{elements.inspect}"
-      result = command 'simulateTouch', id_for_element(xpath)
+    def performRemoteAction(action, xpath)
+      result = command action, id_for_element(xpath)
       
       raise "View not found: #{xpath}" if result!='OK'
+    end
+    
+    def press(xpath)
+      performRemoteAction('simulateTouch', xpath)
+    end
+
+    def performMenuItem(xpath)
+      performRemoteAction('performMenuItem', xpath)
     end
 
     # Nokogiri XML DOM for the current Brominet XML representation of the GUI
@@ -99,7 +106,8 @@ module Encumber
     end
 
     def type_in_field text, xpath
-      command('setText', id_for_element(xpath), text)
+      result = command('setText', id_for_element(xpath), text)
+      raise "View not found: #{xpath}" if result!='OK'
       sleep 1
     end
 

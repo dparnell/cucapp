@@ -7,6 +7,7 @@
  */
 
 @import <Foundation/CPObject.j>
+@import "CalculatorController.j"
 
 @implementation AppController : CPObject
 {
@@ -30,5 +31,11 @@
 
 - (IBAction)pressed:(id)sender {
 	[sender setTitle: "Oh Yes!"];
+}
+
+- (IBAction)newCalculator:(id)sender {
+	[CalculatorController new];
+}
+
 }
 @end
