@@ -83,6 +83,7 @@ function dumpGuiObject(obj) {
 {
 	BOOL requesting;
 	BOOL time_to_die;
+	BOOL launched;
 }
 
 + (void) startCucumber {
@@ -101,6 +102,12 @@ function dumpGuiObject(obj) {
 		cucumber_instance = self;
 		requesting = YES;
 		time_to_die = NO;
+		launched = NO;
+		
+		[[CPNotificationCenter defaultCenter]
+		    object:self
+		    selector:@selector(applicationDidFinishLaunching:)
+		    name:CPApplicationDidFinishLaunchingNotification];
 	}
 	
 	return self;
@@ -211,6 +218,18 @@ function dumpGuiObject(obj) {
 - (CPString) closeBrowser:(CPArray) params {
 	time_to_die = YES;
 	return "OK";
+}
+
+- (CPString)launched:(CPArray)params {
+    if(launched) {
+        return "YES";
+    }
+    
+    return "NO";
+}
+
+- (void)applicationDidFinishLaunching:(CPNotification)note {
+    launched = YES;
 }
 
 @end
