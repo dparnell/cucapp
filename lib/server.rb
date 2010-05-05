@@ -90,7 +90,9 @@ module Encumber
       body = [html]
       [
         200,
-        { 'Content-Type' => 'text/html' },
+        {
+          'Content-Type' => 'text/html',
+        },
         body
       ]
     end

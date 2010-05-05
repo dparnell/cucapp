@@ -77,6 +77,42 @@ module Encumber
       
       raise "View not found: #{xpath}" if result!='OK'
     end
+    
+    def select_from(value_to_select, xpath)
+      result = command 'selectFrom', value_to_select, id_for_element(xpath)
+      
+      raise "Could not select #{value_to_select} in #{xpath}" if result != "OK"
+    end
+    
+    def select_menu(menu_item)
+      result = command 'selectMenu', menu_item
+      
+      raise "Could not select #{menu_item} from the menu" if result != "OK"
+    end
+    
+    def fill_in(value, xpath)
+      type_in_field value, xpath
+    end
+    
+    def find_in(value, xpath)
+      result = command "findIn", value, id_for_element(xpath)
+      
+      raise "Could not find #{value} in #{xpath}" if result != "OK"
+      
+      result == "OK"
+    end
+    
+    def text_for(xpath)
+      result = command "textFor", id_for_element(xpath)
+      
+      raise "Could not find text for element #{xpath}" if result == "__CUKE_ERROR__"
+      
+      result
+    end
+    
+    def double_click(value, xpath)
+      command 'doubleClick', 
+    end
 
     # Nokogiri XML DOM for the current Brominet XML representation of the GUI
     def dom_for_gui
