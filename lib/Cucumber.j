@@ -105,9 +105,10 @@ function dumpGuiObject(obj) {
 		launched = NO;
 		
 		[[CPNotificationCenter defaultCenter]
-		    object:self
+		    addObserver:self
 		    selector:@selector(applicationDidFinishLaunching:)
-		    name:CPApplicationDidFinishLaunchingNotification];
+		    name:CPApplicationDidFinishLaunchingNotification
+		    object:nil];
 	}
 	
 	return self;

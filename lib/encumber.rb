@@ -49,6 +49,10 @@ module Encumber
     def launch
       sleep 0.1 # there seems to be a timing issue. This little hack fixes it.
       Launchy.open("http://localhost:3000/cucumber.html")      
+      
+      until command('launched') == "YES" do
+        # do nothing
+      end
     end
     
     def quit
