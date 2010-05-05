@@ -229,6 +229,96 @@ function dumpGuiObject(obj) {
     return "NO";
 }
 
+- (CPString)selectFrom:(CPArray)params {
+    var obj = cucumber_objects[params[1]];
+    
+    if(obj) {
+        var columns = [obj tableColumns];
+        
+        for(var i = 0; i < [columns count]; i++) {
+            var column = columns[i];
+            for(var j = 0; j < [obj numberOfRows]; j++) {
+                var data = [[obj dataSource] tableView:obj
+                    objectValueForTableColumn:column
+                    row:j];
+                    
+                if(data === params[0]) {
+                    return "OK";
+                }
+            }
+            
+            return "DATA NOT FOUND";
+        }
+    } else {
+        return "OBJECT NOT FOUND";
+    }
+}
+
+- (CPString)selectMenu:(CPArray)params {
+    var obj = cucumber_objects[params[1]];
+    
+    if(obj) {
+        var item = [obj itemWithTitle:params[0]];
+        
+        if(item) {
+            return "OK";
+        } else {
+            return "MENU ITEM NOT FOUND";
+        }
+    } else {
+        return "MENU NOT FOUND";
+    }
+}
+
+- (CPString)findIn:(CPArray)params {
+    return [self selectFrom:params];
+}
+
+- (CPString)textFor:(CPArray)params {
+    var obj = cucumber_objects[params[0]];
+    
+    if(obj) {
+        if([obj respondsToSelector:@selector(stringValue)]) {
+            return [obj stringValue];
+        } else {
+            return "__CUKE_ERROR__";
+        }
+    } else {
+        return "__CUKE_ERROR__";
+    }
+}
+
+- (CPString)doubleClick:(CPArray)params {
+    var obj = cucumber_objects[params[0]];
+    
+    if(obj) {
+        if([obj respondsToSelector:@selector(doubleAction)] && [obj doubleAction] !== null) {
+            [obj performSelector:[obj doubleAction] withObject:self];
+            
+            return "OK";
+        } else {
+            return "NO DOUBLE ACTION";
+        }
+    } else {
+        return "OBJECT NOT FOUND";
+    }
+}
+
+- (CPString)setText:(CPArray)params {
+    var obj = cucumber_objects[params[1]];
+    
+    if(obj) {
+        if([obj respondsToSelector:@selector(setStringValue:)]) {
+            [obj setStringValue:params[0]];
+            return "OK";
+        } else {
+            return "CANNOT SET TEXT ON OBJECT";
+        }
+    } else {
+        return "OBJECT NOT FOUND";
+    }
+}
+
 - (void)applicationDidFinishLaunching:(CPNotification)note {
     launched = YES;
 }

@@ -85,7 +85,7 @@ module Encumber
     end
     
     def select_menu(menu_item)
-      result = command 'selectMenu', menu_item
+      result = command 'selectMenu', id_for_element("\\CPMenu")
       
       raise "Could not select #{menu_item} from the menu" if result != "OK"
     end
@@ -111,7 +111,9 @@ module Encumber
     end
     
     def double_click(value, xpath)
-      command 'doubleClick', 
+      command 'doubleClick', id_for_element(xpath)
+      
+      raise "Could not double click #{xpath}" if result != "OK"
     end
 
     # Nokogiri XML DOM for the current Brominet XML representation of the GUI
