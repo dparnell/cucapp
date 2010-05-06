@@ -255,8 +255,9 @@ function dumpGuiObject(obj) {
                 }
         }
         
-        if([self searchForObjectValue:params[0] inItemsInOutlineView:obj forItem:nil])
-            return "OK";
+        if([[obj dataSource] respondsToSelector:@selector(outlineView:numberOfChildrenOfItem:)])
+            if([self searchForObjectValue:params[0] inItemsInOutlineView:obj forItem:nil])
+                return "OK";
                 
         return "DATA NOT FOUND";
     } else {
@@ -274,13 +275,7 @@ function dumpGuiObject(obj) {
         }
         
         if([self searchForObjectValue:value inItemsInOutlineView:obj forItem:child]) {
-            var index = 0;
-            
-            for(var j = 0; j < [obj numberOfRows]; j++) {
-                if(child === [obj itemAtRow:j]) {
-                    index = j;
-                }
-            }
+            var index = [obj rowForItem:value];
             
             [obj selectRowIndexes:[CPIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
             
@@ -292,7 +287,7 @@ function dumpGuiObject(obj) {
 }
 
 - (CPString)selectMenu:(CPArray)params {
-    var obj = cucumber_objects[params[1]];
+    var obj = [CPApp mainMenu];
     
     if(obj) {
         var item = [obj itemWithTitle:params[0]];
