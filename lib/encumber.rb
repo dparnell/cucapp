@@ -88,9 +88,9 @@ module Encumber
     end
     
     def select_menu(menu_item)
-      result = command 'selectMenu', id_for_element("\\CPMenu")
+      result = command 'selectMenu', menu_item
       
-      raise "Could not select #{menu_item} from the menu" if result != "OK"
+      raise "Could not select #{menu_item} from the menu" + result if result != "OK"
     end
     
     def fill_in(value, xpath)
@@ -114,7 +114,7 @@ module Encumber
     end
     
     def double_click(value, xpath)
-      command 'doubleClick', id_for_element(xpath)
+      result = command 'doubleClick', id_for_element(xpath)
       
       raise "Could not double click #{xpath}" if result != "OK"
     end

@@ -325,7 +325,7 @@ function dumpGuiObject(obj) {
     
     if(obj) {
         if([obj respondsToSelector:@selector(doubleAction)] && [obj doubleAction] !== null) {
-            [obj performSelector:[obj doubleAction] withObject:self];
+            [[obj target] performSelector:[obj doubleAction] withObject:self];
             
             return "OK";
         } else {
