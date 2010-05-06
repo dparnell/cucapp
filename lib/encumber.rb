@@ -47,7 +47,7 @@ module Encumber
     end
 
     def launch
-      sleep 0.1 # there seems to be a timing issue. This little hack fixes it.
+      sleep 0.2 # there seems to be a timing issue. This little hack fixes it.
       Launchy.open("http://localhost:3000/cucumber.html")      
       
       until command('launched') == "YES" do
@@ -57,6 +57,7 @@ module Encumber
     
     def quit
       command 'terminateApp'
+      sleep 0.2
     end
 
     def dump
@@ -142,8 +143,7 @@ module Encumber
     end
 
     def type_in_field text, xpath
-      command('setText', id_for_element(xpath), text)
-      sleep 1
+      command('setText', text, id_for_element(xpath))
     end
 
     def tap xpath
