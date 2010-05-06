@@ -97,12 +97,29 @@ module Encumber
       ]
     end
   end
+  
+  html = File.read(File.join(APP_DIRECTORY, 'index.html'))
+
+  html.gsub!(/<title>(.*)<\/title>/) do
+    "<title>#{$1} - Cucumber</title>"
+  end
+
+  html.gsub!(/<\/body>/) do
+    <<-END_OF_JS
+      <script type="text/javascript">
+          var cucumber = new CFBundle("/Cucumber/Bundle/");
+          cucumber.load(true);
+      </script>
+    </body>
+END_OF_JS
+  end
+  
+  File.open(File.join(APP_DIRECTORY, 'cucumber.html'), 'w') {|f| f.write(html) }
 
   Thread.new{
     EM.run {
       cucumber = Rack::URLMap.new(
         '/cucumber' => CucumberAdapter.new,
-        '/cucumber.html' => CucumberIndexAdapter.new,
         '/Cucumber/Bundle' => Rack::Directory.new(CUCUMBER_BUNDLE_DIR),
         '/' => Rack::Directory.new(APP_DIRECTORY)
       )
