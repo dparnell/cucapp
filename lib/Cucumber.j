@@ -32,6 +32,10 @@ function dumpGuiObject(obj) {
 	{
 		resultingXML += "<title><![CDATA["+[obj title]+"]]></title>";
 	}
+	if ([obj respondsToSelector:@selector(tag)])
+	{
+	    resultingXML += "<tag><![CDATA["+[obj tag]+"]]></title>";
+	}
 	if ([obj respondsToSelector:@selector(isKeyWindow)])
 	{
 		if([obj isKeyWindow]) {
@@ -235,23 +239,56 @@ function dumpGuiObject(obj) {
     if(obj) {
         var columns = [obj tableColumns];
         
-        for(var i = 0; i < [columns count]; i++) {
-            var column = columns[i];
-            for(var j = 0; j < [obj numberOfRows]; j++) {
-                var data = [[obj dataSource] tableView:obj
-                    objectValueForTableColumn:column
-                    row:j];
+        if([[obj dataSource] respondsToSelector:@selector(tableView:objectValueForTableColumn:row:)])
+            for(var i = 0; i < [columns count]; i++) {
+                var column = columns[i];
+                for(var j = 0; j < [obj numberOfRows]; j++) {
+                    var data = [[obj dataSource] tableView:obj
+                        objectValueForTableColumn:column
+                        row:j];
+                        
+                    [obj selectRowIndexes:[CPIndexSet indexSetWithIndex:j] byExtendingSelection:NO];
                     
-                if(data === params[0]) {
-                    return "OK";
+                    if(data === params[0]) {
+                        return "OK";
+                    }
                 }
-            }
-            
-            return "DATA NOT FOUND";
         }
+        
+        if([self searchForObjectValue:params[0] inItemsInOutlineView:obj forItem:nil])
+            return "OK";
+                
+        return "DATA NOT FOUND";
     } else {
         return "OBJECT NOT FOUND";
     }
+}
+
+- (BOOL)searchForObjectValue:(id)value inItemsInOutlineView:(CPOutlineView)obj forItem:(id)item {
+    for(var i = 0; i < [[obj dataSource] outlineView:obj numberOfChildrenOfItem:item]; i++) {
+        var child = [[obj dataSource] outlineView:obj child:i ofItem:item];
+        var testValue = [[obj dataSource] outlineView:obj objectValueForTableColumn:nil byItem:child];
+        
+        if(testValue === value) {
+            return YES;
+        }
+        
+        if([self searchForObjectValue:value inItemsInOutlineView:obj forItem:child]) {
+            var index = 0;
+            
+            for(var j = 0; j < [obj numberOfRows]; j++) {
+                if(child === [obj itemAtRow:j]) {
+                    index = j;
+                }
+            }
+            
+            [obj selectRowIndexes:[CPIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
+            
+            return YES;
+        }
+    }
+    
+    return NO;
 }
 
 - (CPString)selectMenu:(CPArray)params {

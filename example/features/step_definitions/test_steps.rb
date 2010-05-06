@@ -20,3 +20,8 @@ Then /^the textfield should have the text "([^\"]*)"$/ do |arg1|
   value = app.gui.text_for("//CPTextField")
   raise "ERROR: #{arg1} does not equal #{value}" if arg1 != value
 end
+
+Then /^the textfield with tag "([^\"]*)" should have the text "([^\"]*)"$/ do |arg1, arg2|
+  value = app.gui.text_for("//CPTextField[tag='#{arg1}']")
+  raise "ERROR: #{arg2} does not equal #{value}" if arg2 != value
+end

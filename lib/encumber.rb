@@ -53,6 +53,8 @@ module Encumber
       until command('launched') == "YES" do
         # do nothing
       end
+      
+      sleep 1
     end
     
     def quit
@@ -82,7 +84,7 @@ module Encumber
     def select_from(value_to_select, xpath)
       result = command 'selectFrom', value_to_select, id_for_element(xpath)
       
-      raise "Could not select #{value_to_select} in #{xpath}" if result != "OK"
+      raise "Could not select #{value_to_select} in #{xpath} " + result if result != "OK"
     end
     
     def select_menu(menu_item)
