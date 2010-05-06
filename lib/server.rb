@@ -68,35 +68,6 @@ module Encumber
       end
     end
   end
-
-  class CucumberIndexAdapter
-    def call(env)
-      html = File.read(File.join(APP_DIRECTORY, 'index.html'))
-    
-      html.gsub!(/<title>(.*)<\/title>/) do
-        "<title>#{$1} - Cucumber</title>"
-      end
-    
-      html.gsub!(/<\/body>/) do
-        <<-END_OF_JS
-          <script type="text/javascript">
-              var cucumber = new CFBundle("/Cucumber/Bundle/");
-              cucumber.load(true);
-          </script>
-        </body>
-  END_OF_JS
-      end
-    
-      body = [html]
-      [
-        200,
-        {
-          'Content-Type' => 'text/html',
-        },
-        body
-      ]
-    end
-  end
   
   html = File.read(File.join(APP_DIRECTORY, 'index.html'))
 
