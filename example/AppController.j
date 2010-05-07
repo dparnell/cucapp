@@ -17,6 +17,13 @@
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
 {
     // This is called when the application is done loading.
+    
+    var contentView = [theWindow contentView];
+    
+    var textfield = [CPTextField labelWithTitle:@"AnotherTest"];
+    [textfield setTag:@"another"];
+    
+    [contentView addSubview:textfield];
 }
 
 - (void)awakeFromCib

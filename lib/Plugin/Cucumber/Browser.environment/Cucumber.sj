@@ -1,4 +1,4 @@
-@STATIC;1.0;p;10;Cucumber.jt;10024;@STATIC;1.0;I;23;Foundation/Foundation.jt;9977;objj_executeFile("Foundation/Foundation.j", NO);
+@STATIC;1.0;p;10;Cucumber.jt;15415;@STATIC;1.0;I;23;Foundation/Foundation.jt;15367;objj_executeFile("Foundation/Foundation.j", NO);
 cucumber_instance = nil;
 cucumber_objects = nil;
 cucumber_counter = 0;
@@ -14,6 +14,20 @@ dumpGuiObject= function(obj) {
   if (objj_msgSend(obj, "respondsToSelector:", sel_getUid("text")))
   {
    resultingXML += "<text><![CDATA["+objj_msgSend(obj, "text")+"]]></text>";
+  }
+  if (objj_msgSend(obj, "respondsToSelector:", sel_getUid("title")))
+  {
+   resultingXML += "<title><![CDATA["+objj_msgSend(obj, "title")+"]]></title>";
+  }
+  if (objj_msgSend(obj, "respondsToSelector:", sel_getUid("tag")))
+  {
+      resultingXML += "<tag><![CDATA["+objj_msgSend(obj, "tag")+"]]></title>";
+  }
+  if (objj_msgSend(obj, "respondsToSelector:", sel_getUid("isKeyWindow")))
+  {
+   if(objj_msgSend(obj, "isKeyWindow")) {
+    resultingXML += "<keyWindow>YES</keyWindow>";
+   }
   }
   if (objj_msgSend(obj, "respondsToSelector:", sel_getUid("title")))
   {
@@ -85,7 +99,7 @@ dumpGuiObject= function(obj) {
  return '';
 }
 {var the_class = objj_allocateClassPair(CPObject, "Cucumber"),
-meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("requesting"), new objj_ivar("time_to_die")]);
+meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("requesting"), new objj_ivar("time_to_die"), new objj_ivar("launched")]);
 objj_registerClassPair(the_class);
 class_addMethods(the_class, [new objj_method(sel_getUid("init"), function $Cucumber__init(self, _cmd)
 { with(self)
@@ -95,6 +109,8 @@ class_addMethods(the_class, [new objj_method(sel_getUid("init"), function $Cucum
   cucumber_instance = self;
   requesting = YES;
   time_to_die = NO;
+  launched = NO;
+  objj_msgSend(objj_msgSend(CPNotificationCenter, "defaultCenter"), "addObserver:selector:name:object:", self, sel_getUid("applicationDidFinishLaunching:"), CPApplicationDidFinishLaunchingNotification, nil);
  }
  return self;
 }
@@ -187,17 +203,6 @@ class_addMethods(the_class, [new objj_method(sel_getUid("init"), function $Cucum
   return "NOT FOUND";
  }
 }
-},["CPString","CPArray"]), new objj_method(sel_getUid("setText:"), function $Cucumber__setText_(self, _cmd, params)
-{ with(self)
-{
- var obj = cucumber_objects[params[0]];
- if(obj) {
-  objj_msgSend(obj, "setText:",  params[1]);
-  return "OK";
- } else {
-  return "NOT FOUND";
- }
-}
 },["CPString","CPArray"]), new objj_method(sel_getUid("closeWindow:"), function $Cucumber__closeWindow_(self, _cmd, params)
 { with(self)
 {
@@ -226,7 +231,126 @@ class_addMethods(the_class, [new objj_method(sel_getUid("init"), function $Cucum
  time_to_die = YES;
  return "OK";
 }
-},["CPString","CPArray"])]);
+},["CPString","CPArray"]), new objj_method(sel_getUid("launched:"), function $Cucumber__launched_(self, _cmd, params)
+{ with(self)
+{
+    if(launched) {
+        return "YES";
+    }
+    return "NO";
+}
+},["CPString","CPArray"]), new objj_method(sel_getUid("selectFrom:"), function $Cucumber__selectFrom_(self, _cmd, params)
+{ with(self)
+{
+    var obj = cucumber_objects[params[1]];
+    if(obj) {
+        var columns = objj_msgSend(obj, "tableColumns");
+        if(objj_msgSend(objj_msgSend(obj, "dataSource"), "respondsToSelector:", sel_getUid("tableView:objectValueForTableColumn:row:")))
+            for(var i = 0; i < objj_msgSend(columns, "count"); i++) {
+                var column = columns[i];
+                for(var j = 0; j < objj_msgSend(obj, "numberOfRows"); j++) {
+                    var data = objj_msgSend(objj_msgSend(obj, "dataSource"), "tableView:objectValueForTableColumn:row:", obj, column, j);
+                    objj_msgSend(obj, "selectRowIndexes:byExtendingSelection:", objj_msgSend(CPIndexSet, "indexSetWithIndex:", j), NO);
+                    if(data === params[0]) {
+                        return "OK";
+                    }
+                }
+        }
+        if(objj_msgSend(objj_msgSend(obj, "dataSource"), "respondsToSelector:", sel_getUid("outlineView:numberOfChildrenOfItem:")))
+            if(objj_msgSend(self, "searchForObjectValue:inItemsInOutlineView:forItem:", params[0], obj, nil))
+                return "OK";
+        return "DATA NOT FOUND";
+    } else {
+        return "OBJECT NOT FOUND";
+    }
+}
+},["CPString","CPArray"]), new objj_method(sel_getUid("searchForObjectValue:inItemsInOutlineView:forItem:"), function $Cucumber__searchForObjectValue_inItemsInOutlineView_forItem_(self, _cmd, value, obj, item)
+{ with(self)
+{
+    for(var i = 0; i < objj_msgSend(objj_msgSend(obj, "dataSource"), "outlineView:numberOfChildrenOfItem:", obj, item); i++) {
+        var child = objj_msgSend(objj_msgSend(obj, "dataSource"), "outlineView:child:ofItem:", obj, i, item);
+        var testValue = objj_msgSend(objj_msgSend(obj, "dataSource"), "outlineView:objectValueForTableColumn:byItem:", obj, nil, child);
+        if(testValue === value) {
+            return YES;
+        }
+        if(objj_msgSend(self, "searchForObjectValue:inItemsInOutlineView:forItem:", value, obj, child)) {
+            var index = objj_msgSend(obj, "rowForItem:", value);
+            objj_msgSend(obj, "selectRowIndexes:byExtendingSelection:", objj_msgSend(CPIndexSet, "indexSetWithIndex:", index), NO);
+            return YES;
+        }
+    }
+    return NO;
+}
+},["BOOL","id","CPOutlineView","id"]), new objj_method(sel_getUid("selectMenu:"), function $Cucumber__selectMenu_(self, _cmd, params)
+{ with(self)
+{
+    var obj = objj_msgSend(CPApp, "mainMenu");
+    if(obj) {
+        var item = objj_msgSend(obj, "itemWithTitle:", params[0]);
+        if(item) {
+            return "OK";
+        } else {
+            return "MENU ITEM NOT FOUND";
+        }
+    } else {
+        return "MENU NOT FOUND";
+    }
+}
+},["CPString","CPArray"]), new objj_method(sel_getUid("findIn:"), function $Cucumber__findIn_(self, _cmd, params)
+{ with(self)
+{
+    return objj_msgSend(self, "selectFrom:", params);
+}
+},["CPString","CPArray"]), new objj_method(sel_getUid("textFor:"), function $Cucumber__textFor_(self, _cmd, params)
+{ with(self)
+{
+    var obj = cucumber_objects[params[0]];
+    if(obj) {
+        if(objj_msgSend(obj, "respondsToSelector:", sel_getUid("stringValue"))) {
+            return objj_msgSend(obj, "stringValue");
+        } else {
+            return "__CUKE_ERROR__";
+        }
+    } else {
+        return "__CUKE_ERROR__";
+    }
+}
+},["CPString","CPArray"]), new objj_method(sel_getUid("doubleClick:"), function $Cucumber__doubleClick_(self, _cmd, params)
+{ with(self)
+{
+    var obj = cucumber_objects[params[0]];
+    if(obj) {
+        if(objj_msgSend(obj, "respondsToSelector:", sel_getUid("doubleAction")) && objj_msgSend(obj, "doubleAction") !== null) {
+            objj_msgSend(objj_msgSend(obj, "target"), "performSelector:withObject:", objj_msgSend(obj, "doubleAction"), self);
+            return "OK";
+        } else {
+            return "NO DOUBLE ACTION";
+        }
+    } else {
+        return "OBJECT NOT FOUND";
+    }
+}
+},["CPString","CPArray"]), new objj_method(sel_getUid("setText:"), function $Cucumber__setText_(self, _cmd, params)
+{ with(self)
+{
+    var obj = cucumber_objects[params[1]];
+    if(obj) {
+        if(objj_msgSend(obj, "respondsToSelector:", sel_getUid("setStringValue:"))) {
+            objj_msgSend(obj, "setStringValue:", params[0]);
+            return "OK";
+        } else {
+            return "CANNOT SET TEXT ON OBJECT";
+        }
+    } else {
+        return "OBJECT NOT FOUND";
+    }
+}
+},["CPString","CPArray"]), new objj_method(sel_getUid("applicationDidFinishLaunching:"), function $Cucumber__applicationDidFinishLaunching_(self, _cmd, note)
+{ with(self)
+{
+    launched = YES;
+}
+},["void","CPNotification"])]);
 class_addMethods(meta_class, [new objj_method(sel_getUid("startCucumber"), function $Cucumber__startCucumber(self, _cmd)
 { with(self)
 {

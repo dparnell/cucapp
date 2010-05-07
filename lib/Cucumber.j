@@ -33,6 +33,20 @@ function dumpGuiObject(obj) {
 		{
 			resultingXML += "<title><![CDATA["+[obj title]+"]]></title>";
 		}
+		if ([obj respondsToSelector:@selector(tag)])
+		{
+		    resultingXML += "<tag><![CDATA["+[obj tag]+"]]></title>";
+		}
+		if ([obj respondsToSelector:@selector(isKeyWindow)])
+		{
+			if([obj isKeyWindow]) {
+				resultingXML += "<keyWindow>YES</keyWindow>";
+			}
+		}
+		if ([obj respondsToSelector:@selector(title)])
+		{
+			resultingXML += "<title><![CDATA["+[obj title]+"]]></title>";
+		}
 		if ([obj respondsToSelector:@selector(objectValue)])
 		{
 			resultingXML += "<objectValue><![CDATA["+[CPString stringWithFormat: "%@", [obj objectValue]]+"]]></objectValue>";
@@ -111,6 +125,7 @@ function dumpGuiObject(obj) {
 {
 	BOOL requesting;
 	BOOL time_to_die;
+	BOOL launched;
 }
 
 + (void) startCucumber {
@@ -129,6 +144,13 @@ function dumpGuiObject(obj) {
 		cucumber_instance = self;
 		requesting = YES;
 		time_to_die = NO;
+		launched = NO;
+		
+		[[CPNotificationCenter defaultCenter]
+		    addObserver:self
+		    selector:@selector(applicationDidFinishLaunching:)
+		    name:CPApplicationDidFinishLaunchingNotification
+		    object:nil];
 	}
 	
 	return self;
@@ -236,17 +258,6 @@ function dumpGuiObject(obj) {
 	}
 }
 
-- (CPString) setText:(CPArray) params {
-	var obj = cucumber_objects[params[0]];
-	
-	if(obj) {
-		[obj setText: params[1]];
-		return "OK";
-	} else {
-		return "NOT FOUND";
-	}
-}
-
 - (CPString) closeWindow:(CPArray) params {
 	var obj = cucumber_objects[params[0]];
 	
@@ -273,6 +284,136 @@ function dumpGuiObject(obj) {
 - (CPString) closeBrowser:(CPArray) params {
 	time_to_die = YES;
 	return "OK";
+}
+
+- (CPString)launched:(CPArray)params {
+    if(launched) {
+        return "YES";
+    }
+    
+    return "NO";
+}
+
+- (CPString)selectFrom:(CPArray)params {
+    var obj = cucumber_objects[params[1]];
+    
+    if(obj) {
+        var columns = [obj tableColumns];
+        
+        if([[obj dataSource] respondsToSelector:@selector(tableView:objectValueForTableColumn:row:)])
+            for(var i = 0; i < [columns count]; i++) {
+                var column = columns[i];
+                for(var j = 0; j < [obj numberOfRows]; j++) {
+                    var data = [[obj dataSource] tableView:obj
+                        objectValueForTableColumn:column
+                        row:j];
+                        
+                    [obj selectRowIndexes:[CPIndexSet indexSetWithIndex:j] byExtendingSelection:NO];
+                    
+                    if(data === params[0]) {
+                        return "OK";
+                    }
+                }
+        }
+        
+        if([[obj dataSource] respondsToSelector:@selector(outlineView:numberOfChildrenOfItem:)])
+            if([self searchForObjectValue:params[0] inItemsInOutlineView:obj forItem:nil])
+                return "OK";
+                
+        return "DATA NOT FOUND";
+    } else {
+        return "OBJECT NOT FOUND";
+    }
+}
+
+- (BOOL)searchForObjectValue:(id)value inItemsInOutlineView:(CPOutlineView)obj forItem:(id)item {
+    for(var i = 0; i < [[obj dataSource] outlineView:obj numberOfChildrenOfItem:item]; i++) {
+        var child = [[obj dataSource] outlineView:obj child:i ofItem:item];
+        var testValue = [[obj dataSource] outlineView:obj objectValueForTableColumn:nil byItem:child];
+        
+        if(testValue === value) {
+            return YES;
+        }
+        
+        if([self searchForObjectValue:value inItemsInOutlineView:obj forItem:child]) {
+            var index = [obj rowForItem:value];
+            
+            [obj selectRowIndexes:[CPIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
+            
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
+- (CPString)selectMenu:(CPArray)params {
+    var obj = [CPApp mainMenu];
+    
+    if(obj) {
+        var item = [obj itemWithTitle:params[0]];
+        
+        if(item) {
+            return "OK";
+        } else {
+            return "MENU ITEM NOT FOUND";
+        }
+    } else {
+        return "MENU NOT FOUND";
+    }
+}
+
+- (CPString)findIn:(CPArray)params {
+    return [self selectFrom:params];
+}
+
+- (CPString)textFor:(CPArray)params {
+    var obj = cucumber_objects[params[0]];
+    
+    if(obj) {
+        if([obj respondsToSelector:@selector(stringValue)]) {
+            return [obj stringValue];
+        } else {
+            return "__CUKE_ERROR__";
+        }
+    } else {
+        return "__CUKE_ERROR__";
+    }
+}
+
+- (CPString)doubleClick:(CPArray)params {
+    var obj = cucumber_objects[params[0]];
+    
+    if(obj) {
+        if([obj respondsToSelector:@selector(doubleAction)] && [obj doubleAction] !== null) {
+            [[obj target] performSelector:[obj doubleAction] withObject:self];
+            
+            return "OK";
+        } else {
+            return "NO DOUBLE ACTION";
+        }
+    } else {
+        return "OBJECT NOT FOUND";
+    }
+}
+
+- (CPString)setText:(CPArray)params {
+    var obj = cucumber_objects[params[1]];
+    
+    if(obj) {
+        if([obj respondsToSelector:@selector(setStringValue:)]) {
+            [obj setStringValue:params[0]];
+            return "OK";
+        } else {
+            return "CANNOT SET TEXT ON OBJECT";
+        }
+    } else {
+        return "OBJECT NOT FOUND";
+    }
+}
+
+- (void)applicationDidFinishLaunching:(CPNotification)note {
+    launched = YES;
 }
 
 @end

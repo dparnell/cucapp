@@ -1,7 +1,6 @@
 require 'thin'
 
 module Encumber
-  # TODO: automatically guess this value
   build_dir = Dir.glob('Build/*.build').first
   raise 'Can not find build directory' if build_dir.nil?
   raise 'Can not determine Cappuccino application name' if build_dir.match(/Build\/(.*)\.build/).nil?
@@ -16,7 +15,11 @@ module Encumber
 
   raise "Can not locate built application directory: #{APP_DIRECTORY}" if !File.exists?(APP_DIRECTORY)
   
-  CUCUMBER_BUNDLE_DIR = File.join(File.dirname(__FILE__), 'Plugin', 'Cucumber')
+  bundle = File.join(File.dirname(__FILE__), 'Build', 'Debug', 'Cucumber')
+  if !File.exists?(bundle)
+    bundle = File.join(File.dirname(__FILE__), 'Plugin')
+  end
+  CUCUMBER_BUNDLE_DIR = bundle
 
   CUCUMBER_REQUEST_QUEUE = EM::Queue.new
   CUCUMBER_RESPONSE_QUEUE = EM::Queue.new
@@ -68,44 +71,35 @@ module Encumber
       end
     end
   end
+  
+  html = File.read(File.join(APP_DIRECTORY, 'index.html'))
 
-  class CucumberIndexAdapter
-    def call(env)
-      html = File.read(File.join(APP_DIRECTORY, 'index.html'))
-    
-      html.gsub!(/<title>(.*)<\/title>/) do
-        "<title>#{$1} - Cucumber</title>"
-      end
-    
-      html.gsub!(/<\/body>/) do
-        <<-END_OF_JS
-          <script type="text/javascript">
-              var cucumber = new CFBundle("/Cucumber/Bundle/");
-              cucumber.load(true);
-          </script>
-        </body>
-  END_OF_JS
-      end
-    
-      body = [html]
-      [
-        200,
-        { 'Content-Type' => 'text/html' },
-        body
-      ]
-    end
+  html.gsub!(/<title>(.*)<\/title>/) do
+    "<title>#{$1} - Cucumber</title>"
   end
+
+  html.gsub!(/<\/body>/) do
+    <<-END_OF_JS
+      <script type="text/javascript">
+          var cucumber = new CFBundle("/Cucumber/Bundle/");
+          cucumber.load(true);
+      </script>
+    </body>
+END_OF_JS
+  end
+  
+  File.open(File.join(APP_DIRECTORY, 'cucumber.html'), 'w') {|f| f.write(html) }
 
   Thread.new{
     EM.run {
       cucumber = Rack::URLMap.new(
         '/cucumber' => CucumberAdapter.new,
-        '/cucumber.html' => CucumberIndexAdapter.new,
         '/Cucumber/Bundle' => Rack::Directory.new(CUCUMBER_BUNDLE_DIR),
         '/' => Rack::Directory.new(APP_DIRECTORY)
       )
     
       Thin::Server.start('0.0.0.0', 3000) {
+#	puts "Starting server"
         run(cucumber)
 #        puts "RESTARTING main thread"
         Encumber::MAIN_THREAD.wakeup
