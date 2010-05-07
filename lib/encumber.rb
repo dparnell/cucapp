@@ -55,9 +55,7 @@ module Encumber
     end
 
     def dump
-      xml = command 'outputView'      
-#      puts xml
-      xml
+      command 'outputView'      
     end
 
     def id_for_element(xpath)
@@ -65,7 +63,7 @@ module Encumber
       raise "element not found: #{xpath}" if elements.empty?
       elements.first.inner_text.to_i
     end
-    
+
     def performRemoteAction(action, xpath)
       result = command action, id_for_element(xpath)
       
@@ -78,6 +76,10 @@ module Encumber
 
     def performMenuItem(xpath)
       performRemoteAction('performMenuItem', xpath)
+    end
+    
+    def closeWindow(xpath)
+      performRemoteAction('closeWindow', xpath)
     end
 
     # Nokogiri XML DOM for the current Brominet XML representation of the GUI

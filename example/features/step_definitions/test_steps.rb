@@ -13,10 +13,14 @@ Then /^the button should no longer have the title "([^\"]*)"$/ do |arg1|
 end
 
 Given /^a new calculator window$/ do
+  while !app.gui.find("//CPWindow[title='Calculator']").empty?
+    app.gui.closeWindow "//CPWindow[title='Calculator']"
+  end
+  
   app.gui.command "newCalculator"
 end
 
 Then /^the result area should contain "([^\"]*)"$/ do |arg1|
-  raise "Text area didn't contain '#{arg1}'" if app.gui.wait_for("//CPWindow[title='Calculator']//CPTextField[objectValue='#{arg1}']").nil?
+  raise "Text area didn't contain '#{arg1}'" if app.gui.find("//CPWindow[title='Calculator']//CPTextField[objectValue='#{arg1}']").empty?
 end
 
