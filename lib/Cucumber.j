@@ -286,7 +286,7 @@ function dumpGuiObject(obj) {
 	return "OK";
 }
 
-- (CPString)launched:(CPArray)params {
+- (CPString)launched:(CPArray)params {	
     if(launched) {
         return "YES";
     }

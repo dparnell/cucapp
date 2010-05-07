@@ -20,6 +20,7 @@ module Encumber
       response = nil
       CUCUMBER_REQUEST_QUEUE.push(command)
       CUCUMBER_RESPONSE_QUEUE.pop { |result|
+#        puts "RESPONSE: #{result}"
         response = result
         th.wakeup
       }
@@ -54,9 +55,11 @@ module Encumber
       sleep 0.2 # there seems to be a timing issue. This little hack fixes it.
       Launchy.open("http://localhost:3000/cucumber.html")      
       
-      until command('launched') == "YES" do
+      startTime = Time.now
+      until command('launched') == "YES" || (Time.now-startTime<@timeout) do
         # do nothing
       end
+      raise "launch timed out " if Time.now-startTime>@timeout
       
       sleep 1
     end
