@@ -106,7 +106,7 @@
 							<string key="NSTitle">File</string>
 							<object class="NSMutableArray" key="NSMenuItems">
 								<bool key="EncodedWithXMLCoder">YES</bool>
-								<object class="NSMenuItem" id="238495158">
+								<object class="NSMenuItem" id="981582485">
 									<reference key="NSMenu" ref="720053764"/>
 									<string key="NSTitle">New Calculator</string>
 									<string key="NSKeyEquiv">n</string>
@@ -115,7 +115,7 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
-								<object class="NSMenuItem" id="93875338">
+								<object class="NSMenuItem" id="847533786">
 									<reference key="NSMenu" ref="720053764"/>
 									<bool key="NSIsDisabled">YES</bool>
 									<bool key="NSIsSeparator">YES</bool>
@@ -622,7 +622,7 @@
 					<object class="IBActionConnection" key="connection">
 						<string key="label">newCalculator:</string>
 						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="238495158"/>
+						<reference key="destination" ref="981582485"/>
 					</object>
 					<int key="connectionID">470</int>
 				</object>
@@ -630,9 +630,9 @@
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="1050"/>
-						<reference key="destination" ref="1021"/>
+						<reference key="destination" ref="635946545"/>
 					</object>
-					<int key="connectionID">471</int>
+					<int key="connectionID">472</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -728,8 +728,8 @@
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="776162233"/>
-							<reference ref="238495158"/>
-							<reference ref="93875338"/>
+							<reference ref="981582485"/>
+							<reference ref="847533786"/>
 						</object>
 						<reference key="parent" ref="379814623"/>
 					</object>
@@ -977,12 +977,12 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">468</int>
-						<reference key="object" ref="238495158"/>
+						<reference key="object" ref="981582485"/>
 						<reference key="parent" ref="720053764"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">469</int>
-						<reference key="object" ref="93875338"/>
+						<reference key="object" ref="847533786"/>
 						<reference key="parent" ref="720053764"/>
 					</object>
 				</object>
@@ -1222,7 +1222,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">471</int>
+			<int key="maxID">472</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
