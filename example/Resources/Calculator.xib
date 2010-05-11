@@ -354,7 +354,7 @@
 							<object class="NSButtonCell" key="NSCell" id="384266494">
 								<int key="NSCellFlags">-2080244224</int>
 								<int key="NSCellFlags2">134217728</int>
-								<string key="NSContents">−</string>
+								<string key="NSContents">-</string>
 								<reference key="NSSupport" ref="742800072"/>
 								<reference key="NSControlView" ref="223314593"/>
 								<int key="NSButtonFlags">-2038284033</int>
@@ -575,6 +575,46 @@
 						<reference key="destination" ref="967656564"/>
 					</object>
 					<int key="connectionID">55</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">clearPressed:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="973110610"/>
+					</object>
+					<int key="connectionID">56</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">negatePressed:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="589101867"/>
+					</object>
+					<int key="connectionID">57</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">dividePressed:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="436896387"/>
+					</object>
+					<int key="connectionID">58</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">multiplyPressed:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="750111326"/>
+					</object>
+					<int key="connectionID">59</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">subtractPressed:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="223314593"/>
+					</object>
+					<int key="connectionID">60</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -1029,7 +1069,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">55</int>
+			<int key="maxID">60</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1042,11 +1082,21 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>addPressed:</string>
+							<string>clearPressed:</string>
 							<string>digitPressed:</string>
+							<string>dividePressed:</string>
 							<string>evalPressed:</string>
+							<string>multiplyPressed:</string>
+							<string>negatePressed:</string>
+							<string>subtractPressed:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -1057,8 +1107,13 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>addPressed:</string>
+							<string>clearPressed:</string>
 							<string>digitPressed:</string>
+							<string>dividePressed:</string>
 							<string>evalPressed:</string>
+							<string>multiplyPressed:</string>
+							<string>negatePressed:</string>
+							<string>subtractPressed:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1067,11 +1122,31 @@
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
+								<string key="name">clearPressed:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
 								<string key="name">digitPressed:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
+								<string key="name">dividePressed:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
 								<string key="name">evalPressed:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">multiplyPressed:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">negatePressed:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">subtractPressed:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>

@@ -41,6 +41,30 @@
 	[self checkForOperation: "+"];
 }
 
+- (IBAction) subtractPressed:(CPButton)sender {
+	[self checkForOperation: "-"];
+}
+
+- (IBAction) multiplyPressed:(CPButton)sender {
+	[self checkForOperation: "*"];
+}
+
+- (IBAction) dividePressed:(CPButton)sender {
+	[self checkForOperation: "/"];
+}
+
+- (IBAction) negatePressed:(CPButton)sender {
+	var text = [output stringValue];
+	if(text!='0') {
+		text = '-('+text+')';
+		[output setStringValue: text];
+	}
+}
+
+- (IBAction) clearPressed:(CPButton)sender {
+	[output setStringValue: "0"];
+}
+
 - (IBAction) evalPressed:(CPButton)sender {
 	var text = eval([output stringValue]);
 	[output setStringValue: text];
