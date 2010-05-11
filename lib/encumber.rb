@@ -6,7 +6,7 @@ require 'launchy'
 module Encumber
 
   class GUI
-    def initialize(timeout_in_seconds=4)
+    def initialize(timeout_in_seconds=10)
       @timeout     = timeout_in_seconds
     end
 

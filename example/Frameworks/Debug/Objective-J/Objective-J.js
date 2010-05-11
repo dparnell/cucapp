@@ -3634,7 +3634,7 @@ Executable.prototype.loadFileDependencies = function(aCallback)
     if (status === ExecutableUnloadedFileDependencies)
     {
         if (fileDependencyLoadCount)
-            throw "Can't load";
+            throw "Can't load 3";
         loadFileDependenciesForExecutable(this);
     }
 }

@@ -81,13 +81,21 @@ module Encumber
   html.gsub!(/<\/body>/) do
     <<-END_OF_JS
       <script type="text/javascript">
-          var cucumber = new CFBundle("/Cucumber/Bundle/");
-          cucumber.load(true);
+        function startCucumber() {
+          if(CPApp._finishedLaunching) {
+            new CFBundle("/Cucumber/Bundle/").load(true);
+          } else {
+            window.setTimeout(startCucumber, 100);
+          }
+        }
+        window.setTimeout(startCucumber, 100);
+        
+//          new CFBundle("/Cucumber/Bundle/").load(true);
       </script>
     </body>
 END_OF_JS
   end
-  
+
   File.open(File.join(APP_DIRECTORY, 'cucumber.html'), 'w') {|f| f.write(html) }
 
   Thread.new{
