@@ -82,7 +82,7 @@ module Encumber
     <<-END_OF_JS
       <script type="text/javascript">
         function startCucumber() {
-          if(CPApp._finishedLaunching) {
+          if(window['CPApp'] && CPApp._finishedLaunching) {
             new CFBundle("/Cucumber/Bundle/").load(true);
           } else {
             window.setTimeout(startCucumber, 100);

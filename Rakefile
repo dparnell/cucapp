@@ -20,6 +20,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency("thin", ">= 0")
   s.add_dependency("nokogiri", ">= 0")
   s.add_dependency("json", ">= 0")
+  s.add_dependency("launchy", ">= 0")
 end
  
 Rake::GemPackageTask.new(spec) do |pkg| 
