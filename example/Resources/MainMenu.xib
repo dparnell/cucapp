@@ -12,7 +12,6 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="372"/>
 			<integer value="81"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
@@ -107,7 +106,7 @@
 							<string key="NSTitle">File</string>
 							<object class="NSMutableArray" key="NSMenuItems">
 								<bool key="EncodedWithXMLCoder">YES</bool>
-								<object class="NSMenuItem" id="591900161">
+								<object class="NSMenuItem" id="238495158">
 									<reference key="NSMenu" ref="720053764"/>
 									<string key="NSTitle">New Calculator</string>
 									<string key="NSKeyEquiv">n</string>
@@ -116,7 +115,7 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
-								<object class="NSMenuItem" id="608634667">
+								<object class="NSMenuItem" id="93875338">
 									<reference key="NSMenu" ref="720053764"/>
 									<bool key="NSIsDisabled">YES</bool>
 									<bool key="NSIsSeparator">YES</bool>
@@ -406,6 +405,7 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{191, 180}, {96, 32}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
+							<reference key="NSWindow"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSButtonCell" key="NSCell" id="803416381">
 								<int key="NSCellFlags">67239424</int>
@@ -430,6 +430,7 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{191, 131}, {96, 22}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
+							<reference key="NSWindow"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="1013650495">
 								<int key="NSCellFlags">-1804468671</int>
@@ -461,6 +462,7 @@
 					</object>
 					<string key="NSFrameSize">{480, 360}</string>
 					<reference key="NSSuperview"/>
+					<reference key="NSWindow"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1440, 878}}</string>
 				<string key="NSMaxSize">{1.79769e+308, 1.79769e+308}</string>
@@ -620,9 +622,17 @@
 					<object class="IBActionConnection" key="connection">
 						<string key="label">newCalculator:</string>
 						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="591900161"/>
+						<reference key="destination" ref="238495158"/>
 					</object>
 					<int key="connectionID">470</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="1050"/>
+						<reference key="destination" ref="1021"/>
+					</object>
+					<int key="connectionID">471</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -718,8 +728,8 @@
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="776162233"/>
-							<reference ref="591900161"/>
-							<reference ref="608634667"/>
+							<reference ref="238495158"/>
+							<reference ref="93875338"/>
 						</object>
 						<reference key="parent" ref="379814623"/>
 					</object>
@@ -967,12 +977,12 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">468</int>
-						<reference key="object" ref="591900161"/>
+						<reference key="object" ref="238495158"/>
 						<reference key="parent" ref="720053764"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">469</int>
-						<reference key="object" ref="608634667"/>
+						<reference key="object" ref="93875338"/>
 						<reference key="parent" ref="720053764"/>
 					</object>
 				</object>
@@ -1212,7 +1222,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">470</int>
+			<int key="maxID">471</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
