@@ -58,3 +58,14 @@ Feature: calculator
     And I press the "6" button
     And I press the "C" button
     Then the result area should contain "0"
+
+  Scenario: A negated calculator
+    Given a new calculator window
+    When I press the "1" button
+    And I press the "2" button
+    And I press the "±" button
+    And I press the "+" button
+    And I press the "1" button
+    And I press the "2" button
+    And I press the "=" button
+    Then the result area should contain "0"
