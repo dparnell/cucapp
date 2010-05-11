@@ -22,21 +22,9 @@
 }
 
 - (void) checkForOperation:(CPString)nextOperation {
-	var result;
-	
-	if(operation && value) {
-		result = eval(''+value+operation+[output stringValue]);
-	} else {	
-		value = [output stringValue];
-	}
-	
-	if(nextOperation==null) {
-		value = null;
-		[output setStringValue: result];
-	} else {
-		[output setStringValue: '0'];
-	}
-	operation = nextOperation;
+	var text = [output stringValue];
+	text = text + nextOperation;
+	[output setStringValue: text];
 }
 
 - (IBAction) digitPressed:(CPButton)sender {
@@ -51,6 +39,11 @@
 
 - (IBAction) addPressed:(CPButton)sender {
 	[self checkForOperation: "+"];
+}
+
+- (IBAction) evalPressed:(CPButton)sender {
+	var text = eval([output stringValue]);
+	[output setStringValue: text];
 }
 
 @end

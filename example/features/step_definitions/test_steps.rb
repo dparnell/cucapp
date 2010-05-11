@@ -21,7 +21,8 @@ Given /^a new calculator window$/ do
 end
 
 Then /^the result area should contain "([^\"]*)"$/ do |arg1|
-  raise "Text area didn't contain '#{arg1}'" if app.gui.find("//CPWindow[title='Calculator']//CPTextField[objectValue='#{arg1}']").empty?
+  value = app.gui.text_for "//CPWindow[title='Calculator']//CPTextField"
+  raise "Text area contained '#{value}' expected '#{arg1}'" if value!=arg1
 end
 
 When /^I input "([^\"]*)" in the textfield$/ do |arg1|

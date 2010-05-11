@@ -165,7 +165,7 @@ module Encumber
       raise "View not found: #{xpath} - #{result}" if result!='OK'
       sleep 1
     end
-
+    
     def tap xpath
       press xpath
     end

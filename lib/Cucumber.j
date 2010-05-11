@@ -287,7 +287,7 @@ function dumpGuiObject(obj) {
 }
 
 - (CPString)launched:(CPArray)params {	
-    if(launched) {
+    if(launched || CPApp._finishedLaunching) {
         return "YES";
     }
     
