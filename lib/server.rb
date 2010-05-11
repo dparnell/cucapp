@@ -17,7 +17,7 @@ module Encumber
   
   bundle = File.join(File.dirname(__FILE__), 'Build', 'Debug', 'Cucumber')
   if !File.exists?(bundle)
-    bundle = File.join(File.dirname(__FILE__), 'Plugin')
+    bundle = File.join(File.dirname(__FILE__), 'Plugin', 'Cucumber')
   end
   CUCUMBER_BUNDLE_DIR = bundle
 

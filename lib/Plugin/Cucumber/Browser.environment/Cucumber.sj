@@ -1,4 +1,4 @@
-@STATIC;1.0;p;10;Cucumber.jt;15415;@STATIC;1.0;I;23;Foundation/Foundation.jt;15367;objj_executeFile("Foundation/Foundation.j", NO);
+@STATIC;1.0;p;10;Cucumber.jt;15443;@STATIC;1.0;I;23;Foundation/Foundation.jt;15395;objj_executeFile("Foundation/Foundation.j", NO);
 cucumber_instance = nil;
 cucumber_objects = nil;
 cucumber_counter = 0;
@@ -234,7 +234,7 @@ class_addMethods(the_class, [new objj_method(sel_getUid("init"), function $Cucum
 },["CPString","CPArray"]), new objj_method(sel_getUid("launched:"), function $Cucumber__launched_(self, _cmd, params)
 { with(self)
 {
-    if(launched) {
+    if(launched || CPApp._finishedLaunching) {
         return "YES";
     }
     return "NO";
