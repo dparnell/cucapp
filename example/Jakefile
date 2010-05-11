@@ -69,6 +69,13 @@ task ("run", ["debug"], function()
     OS.system(["open", FILE.join("Build", "Debug", "test", "index.html")]);
 });
 
+task ("cucumber", ["debug"], function()
+{
+	var outfile = FILE.join("Build", "Debug", "test", "cucumber_result.html");
+    OS.system(["cucumber", "--format", "html", "--out", outfile]);
+    OS.system(["open", outfile]);
+});
+
 task ("run-release", ["release"], function()
 {
     OS.system(["open", FILE.join("Build", "Release", "test", "index.html")]);
