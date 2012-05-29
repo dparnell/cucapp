@@ -35,7 +35,7 @@ function dumpGuiObject(obj) {
 		}
 		if ([obj respondsToSelector:@selector(tag)])
 		{
-		    resultingXML += "<tag><![CDATA["+[obj tag]+"]]></title>";
+		    resultingXML += "<tag><![CDATA["+[obj tag]+"]]></tag>";
 		}
 		if ([obj respondsToSelector:@selector(isKeyWindow)])
 		{
