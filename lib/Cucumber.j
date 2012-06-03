@@ -403,6 +403,7 @@ function dumpGuiObject(obj) {
     if(obj) {
         if([obj respondsToSelector:@selector(setStringValue:)]) {
             [obj setStringValue:params[0]];
+            [self propagateValue:[obj stringValue] forBinding:"value" forObject:obj];
             return "OK";
         } else {
             return "CANNOT SET TEXT ON OBJECT";
@@ -410,6 +411,49 @@ function dumpGuiObject(obj) {
     } else {
         return "OBJECT NOT FOUND";
     }
+}
+
+-(void) propagateValue:(id)value forBinding:(CPString)binding forObject:(id)aObject;
+{
+
+    //WARNING: bindingInfo contains CPNull, so it must be accounted for
+    var bindingInfo = [aObject infoForBinding:binding];
+    if(!bindingInfo)
+        return; //there is no binding
+
+    //apply the value transformer, if one has been set
+    var bindingOptions = [bindingInfo objectForKey:CPOptionsKey];
+    if(bindingOptions){
+        var transformer = [bindingOptions valueForKey:CPValueTransformerBindingOption];
+        if(!transformer || transformer == [CPNull null]){
+            var transformerName = [bindingOptions valueForKey:CPValueTransformerNameBindingOption];
+            if(transformerName && transformerName != [CPNull null]){
+                transformer = [CPValueTransformer valueTransformerForName:transformerName];
+            }
+        }
+
+        if(transformer && transformer != [CPNull null]){
+            if([[transformer class] allowsReverseTransformation]){
+                value = [transformer reverseTransformedValue:value];
+            } else {
+                CPLog(@"WARNING: binding \"%@\" has value transformer, but it doesn't allow reverse transformations in %s", binding, __PRETTY_FUNCTION__);
+            }
+        }
+    }
+
+    var boundObject = [bindingInfo objectForKey:CPObservedObjectKey];
+    if(!boundObject || boundObject == [CPNull null]){
+        CPLog(@"ERROR: CPObservedObjectKey was nil for binding \"%@\" in %s", binding, __PRETTY_FUNCTION__);
+        return;
+    }
+
+    var boundKeyPath = [bindingInfo objectForKey:CPObservedKeyPathKey];
+    if(!boundKeyPath || boundKeyPath == [CPNull null]){
+        CPLog(@"ERROR: CPObservedKeyPathKey was nil for binding \"%@\" in %s", binding, __PRETTY_FUNCTION__);
+        return;
+    }
+
+    [boundObject setValue:value forKeyPath:boundKeyPath];
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)note {
